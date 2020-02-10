@@ -69,4 +69,5 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname + '/frontend/index.html'));
 });
 
+//Iniciar la aplicación
 app.listen(port, () => console.log(`Aplicación iniciada en el puerto ${port}...`));
