@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const router = express.Router();
-const port = 8000;
+const port = 8080;
 
 app.use(express.static('frontend'));
 
@@ -66,7 +66,7 @@ app.get("/getWord", (req, res) => {
 
 //Funcion que retorna la página de la aplicación
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname + '/frontend/index.html'));
+    return res.sendFile(path.join(__dirname + '/frontend/index.html'));
 });
 
 //Iniciar la aplicación
