@@ -5,8 +5,42 @@ Buzzer::Buzzer(int pin1,int pin2)
 {
   pinMode(pin1, OUTPUT);
   pinMode(pin2, OUTPUT);
+  
+  digitalWrite(pin1,HIGH);
+  digitalWrite(pin2,HIGH);
+  
   corriente = pin1;
   onOff = pin2;
+  instanciaCaracteres();
+}
+
+void Buzzer::reproducirString(String cadena){
+  for(int c=0;c<cadena.length();c++){
+    int caracter = -1;
+    
+    if(cadena.charAt(c)>64&&cadena.charAt(c)<91){
+      caracter = cadena.charAt(c)-65;
+    }
+    else if(cadena.charAt(c)>47&&cadena.charAt(c)<58){    
+      caracter = cadena.charAt(c)-23;
+    }
+    
+    if(caracter == -1){
+      break;  
+    }
+      
+    for(int i=0;i<5;i++){
+      if(letrasMorse[caracter][i]==0)
+        break;
+      else if(letrasMorse[caracter][i]==1)
+        punto();
+      else
+        raya();
+      
+      pausaSonido();
+    }
+      pausaLetra();
+  }
 }
 
 void Buzzer::punto(){
@@ -49,7 +83,6 @@ void Buzzer::sonidosMorse(int tiempo,int sonido){
   
   digitalWrite(onOff,LOW);
 }
-
 
 void Buzzer::instanciaCaracteres(){
   //A
@@ -186,74 +219,73 @@ void Buzzer::instanciaCaracteres(){
   letrasMorse[25][2] = 1;
   letrasMorse[25][3] = 1;
 
-  //1
-  letrasMorse[26][0] = 1;
+  //0
+  letrasMorse[26][0] = 2;
   letrasMorse[26][1] = 2;
   letrasMorse[26][2] = 2;
   letrasMorse[26][3] = 2;
   letrasMorse[26][4] = 2;
   
-  //2
+  //1
   letrasMorse[27][0] = 1;
-  letrasMorse[27][1] = 1;
+  letrasMorse[27][1] = 2;
   letrasMorse[27][2] = 2;
   letrasMorse[27][3] = 2;
   letrasMorse[27][4] = 2;
   
-  //3
+  //2
   letrasMorse[28][0] = 1;
   letrasMorse[28][1] = 1;
-  letrasMorse[28][2] = 1;
+  letrasMorse[28][2] = 2;
   letrasMorse[28][3] = 2;
   letrasMorse[28][4] = 2;
   
-  //4
+  //3
   letrasMorse[29][0] = 1;
   letrasMorse[29][1] = 1;
   letrasMorse[29][2] = 1;
-  letrasMorse[29][3] = 1;
+  letrasMorse[29][3] = 2;
   letrasMorse[29][4] = 2;
   
-  //5
+  //4
   letrasMorse[30][0] = 1;
   letrasMorse[30][1] = 1;
   letrasMorse[30][2] = 1;
   letrasMorse[30][3] = 1;
-  letrasMorse[30][4] = 1;
+  letrasMorse[30][4] = 2;
   
-  //6
-  letrasMorse[31][0] = 2;
+  //5
+  letrasMorse[31][0] = 1;
   letrasMorse[31][1] = 1;
   letrasMorse[31][2] = 1;
   letrasMorse[31][3] = 1;
   letrasMorse[31][4] = 1;
   
-  //7
+  //6
   letrasMorse[32][0] = 2;
-  letrasMorse[32][1] = 2;
+  letrasMorse[32][1] = 1;
   letrasMorse[32][2] = 1;
   letrasMorse[32][3] = 1;
   letrasMorse[32][4] = 1;
   
-  //8
+  //7
   letrasMorse[33][0] = 2;
   letrasMorse[33][1] = 2;
-  letrasMorse[33][2] = 2;
+  letrasMorse[33][2] = 1;
   letrasMorse[33][3] = 1;
   letrasMorse[33][4] = 1;
   
-  //9
+  //8
   letrasMorse[34][0] = 2;
   letrasMorse[34][1] = 2;
   letrasMorse[34][2] = 2;
-  letrasMorse[34][3] = 2;
+  letrasMorse[34][3] = 1;
   letrasMorse[34][4] = 1;
   
-  //0
+  //9
   letrasMorse[35][0] = 2;
   letrasMorse[35][1] = 2;
   letrasMorse[35][2] = 2;
   letrasMorse[35][3] = 2;
-  letrasMorse[35][4] = 2;
-  
+  letrasMorse[35][4] = 1;  
 }

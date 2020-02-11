@@ -1,19 +1,21 @@
 #ifndef Buzzer_h
 #define Buzzer_h
-
+#include <Arduino.h>
 class Buzzer
 {
   public:
     Buzzer(int pin1,int pin2);
-    void dot();
-    void dash();
+    void punto();
+    void raya();
+    void ok();
+    void fail();
+    void reproducirString(String cadena);
+    
   private:
     void sonidosMorse(int tiempo,int sonido);
     void pausa(int tiempo);
     void pausaLetra();
     void pausaSonido();
-    void punto();
-    void raya();
     void instanciaCaracteres();
 
     int letrasMorse[36][5];
