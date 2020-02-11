@@ -12,6 +12,16 @@ Buzzer::Buzzer(int pin1,int pin2)
   corriente = pin1;
   onOff = pin2;
   instanciaCaracteres();
+  tiempoPausaSonido = 400;
+  tiempoPausaLetra = 1500;
+}
+
+void Buzzer::settiempoPausaLetra(int tiempo){
+    tiempoPausaLetra = tiempo;
+}
+
+void Buzzer::settiempoPausaSonido(int tiempo){
+    tiempoPausaSonido = tiempo;
 }
 
 void Buzzer::reproducirString(String cadena){
@@ -52,11 +62,11 @@ void Buzzer::raya(){
 }
 
 void Buzzer::pausaSonido(){
-  pausa(400);
+  pausa(tiempoPausaSonido);
 }
 
 void Buzzer::pausaLetra(){
-  pausa(1500);
+  pausa(tiempoPausaLetra);
 }
 
 void Buzzer::pausa(int tiempo){
