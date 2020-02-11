@@ -1,8 +1,6 @@
 #ifndef Buzzer_h
 #define Buzzer_h
 
-#include "Arduino.h"
-
 class Buzzer
 {
   public:
@@ -10,14 +8,17 @@ class Buzzer
     void dot();
     void dash();
   private:
-    int _pin1;
-    int _pin2;
-};
+    void sonidosMorse(int tiempo,int sonido);
+    void pausa(int tiempo);
+    void pausaLetra();
+    void pausaSonido();
+    void punto();
+    void raya();
+    void instanciaCaracteres();
 
-Buzzer::Buzzer(int pin)
-{
-  pinMode(pin, OUTPUT);
-  _pin = pin;
-}
+    int letrasMorse[36][5];
+    int corriente;
+    int onOff;
+};
 
 #endif
