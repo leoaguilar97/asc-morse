@@ -3,6 +3,14 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
+#define DEBUG 1
+
+void debug(String val){
+  #if DEBUG
+  Serial.println(String(">> ") + val);
+  #endif  
+}
+
 const char *ssid = "Casa 3";
 const char *password = "Aa1234zZ";
 
@@ -15,9 +23,10 @@ String message = "";
 boolean is_app = false;
 
 void process_app_request() {
+
   WiFiClientSecure httpsClient;
   httpsClient.setFingerprint(fingerprint);
-  httpsClient.setTimeout(15000);
+  httpsClient.setTimeout(1000);
 
   int r = 0;
 
@@ -26,6 +35,7 @@ void process_app_request() {
     r++;
   }
 
+  debug("Salio ciclo");
   if (r == 30) {
     return;
   }
@@ -35,9 +45,10 @@ void process_app_request() {
   httpsClient.print(String("GET ") + Link + " HTTP/1.1\r\n" +
                     "Host: " + host + "\r\n" +
                     "Connection: close\r\n\r\n");
-
+  
   while (httpsClient.connected()) {
     String line = httpsClient.readStringUntil('\n');
+    
     if (line == "\r") {
       break;
     }
@@ -47,7 +58,8 @@ void process_app_request() {
   while (httpsClient.available()) {
     line += httpsClient.readStringUntil('\n');
   }
-  Serial.println(line);
+
+  debug(line);
 
   delay(100);
 }
@@ -89,5 +101,5 @@ void setup() {  Serial.begin(115200);
 // the loop function runs over and over again forever
 void loop() {
   process_app_request();
-  delay(1000);
+  delay(100);
 }
