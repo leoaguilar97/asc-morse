@@ -60,22 +60,10 @@ void process_app_request() {
   }
 
   debug(line);
-
-  delay(100);
 }
 
-/*
-  ESP8266 Blink by Simon Peter
-  Blink the blue LED on the ESP-01 module
-  This example code is in the public domain
-
-  The blue LED on the ESP-01 module is connected to GPIO1
-  (which is also the TXD pin; so we cannot use Serial.print() at the same time)
-
-  Note that this sketch uses LED_BUILTIN to find the pin with the internal LED
-*/
-
-void setup() {  Serial.begin(115200);
+void setup() {  
+  Serial.begin(115200);
 
   WiFi.mode(WIFI_OFF);
   delay(1000);
