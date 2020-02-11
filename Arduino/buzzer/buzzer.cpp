@@ -16,6 +16,18 @@ Buzzer::Buzzer(int pin1,int pin2)
   tiempoPausaLetra = 1500;
 }
 
+void Buzzer::ok(){
+  sonidosMorse(100,1);
+  pausa(50);
+  sonidosMorse(100,1);
+}
+
+void Buzzer::fail(){
+  sonidosMorse(700,1);
+  pausa(50);
+  sonidosMorse(100,1);
+}
+
 void Buzzer::settiempoPausaLetra(int tiempo){
     tiempoPausaLetra = tiempo;
 }
