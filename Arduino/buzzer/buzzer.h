@@ -85,21 +85,21 @@ class Buzzer
     int tiempoPausaSonido;
     int tiempoPausaLetra;
     
-    void pausaSonido(){
+    void pausaSonido(){ //Pausa entre los pitidos.
       pausa(tiempoPausaSonido);
     }
 
-    void pausaLetra(){
+    void pausaLetra(){ //Pausa entre letras.
       pausa(tiempoPausaLetra);
     }
 
-    void pausa(int tiempo){
+    void pausa(int tiempo){ //Crea las pausas (metodo llamado por pausaSonido y pausaLetra).
       long contador = millis();
       while(contador+tiempo>millis()){
       }
     }
 
-    void sonidosMorse(int tiempo,int sonido){
+    void sonidosMorse(int tiempo,int sonido){ //Crea los sonidos de puntos o rayas.
       long contador = millis();
       long frecuencia = 0;  
       
@@ -117,7 +117,7 @@ class Buzzer
       digitalWrite(onOff,LOW);
     }
 
-    void instanciaCaracteres(){
+    void instanciaCaracteres(){ //Se instancian la matriz con los caracteres a utilizar.
       //A
       letrasMorse[0][0] = 1;
       letrasMorse[0][1] = 2;

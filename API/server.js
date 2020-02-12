@@ -79,6 +79,22 @@ app.get("/getWord", (req, res) => {
         res.json({ word: current_word });
 });
 
+//Obtener la primera palabra agregada que no ha sido obtenida antes
+app.get("/getWord", (req, res) => {
+    //Si no hay mas palabras en la cola
+    if (words.length < 1){
+        return isArduino(req) ? 
+            res.send(NO_WRD_REMAINING) :
+            res.json({ msg: NO_WRD_REMAINING, status: 1, word: null});
+    }
+    //Obtener la primera palabra de la cola, y eliminarla
+    let current_word = words.shift();
+
+    return isArduino(req) ? 
+        res.send(current_word) :
+        res.json({ word: current_word });
+});
+
 
 
 //Funcion que retorna la página de la aplicación
