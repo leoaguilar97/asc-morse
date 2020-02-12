@@ -48,7 +48,7 @@ app.get("/addWord", (req, res) => {
     let word = req.query["word"];
     words.push(word);
 
-    bd.saveWord(word, function(err){
+    bd.saveWord({ word: word, typedIn: isArduino(req) ? "arduino" : "web"}, function(err){
         if (err){
             //Si ocurrió un error al agregar la palabra a la base de datos
             return arduino ?
@@ -78,6 +78,8 @@ app.get("/getWord", (req, res) => {
         res.send(current_word) :
         res.json({ word: current_word });
 });
+
+
 
 //Funcion que retorna la página de la aplicación
 app.get("/", (req, res) => {

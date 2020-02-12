@@ -14,7 +14,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true });
 /*
 Función que debe guardar una palabra en la base de datos mongodb, ubicada en un servidor Mongo Atlas
 */
-exports.saveWord = function(wordToSave, callback){
+exports.saveWord = function(document, callback){
     //conectar el cliente de MongoDb
     client.connect(err => {
         //Si existió algún error en la conexión
@@ -28,7 +28,7 @@ exports.saveWord = function(wordToSave, callback){
         const collection = client.db("ascmorse").collection("words");
 
         //Insertar el objeto
-        collection.insertOne({word: wordToSave}, (err, res) =>{
+        collection.insertOne(document, (err, res) =>{
             //Si existió algún error en la inserción del dato
             if (err){
                 console.log(">> Error al insertar dato: ");
