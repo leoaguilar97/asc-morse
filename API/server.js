@@ -24,7 +24,8 @@ let NO_WRD_REMAINING = "No existen más palabras en la cola.";
 
 //función para comprobar si la petición es desde el dispositivo arduino.
 let isArduino = function(req){
-    return req.params != null && req.params["arduino"] == "true";
+    console.log("Req: " + req);
+    return req.params != null && req.params.arduino == "true";
 };
 
 //Agregar una palabra a la cola de palabras
