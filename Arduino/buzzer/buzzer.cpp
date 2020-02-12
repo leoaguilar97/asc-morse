@@ -14,7 +14,7 @@ Buzzer::Buzzer(int pin1,int pin2)
   onOff = pin2;
   instanciaCaracteres();
   tiempoPausaSonido = 400;
-  tiempoPausaLetra = 1500;
+  tiempoPausaLetra = 5000;
 }
 
 void Buzzer::ok(){
@@ -41,6 +41,7 @@ void Buzzer::settiempoPausaSonido(int tiempo){
 
 void Buzzer::reproducirString(String cadena){
   for(int c=0;c<cadena.length();c++){
+    Serial.print(cadena.charAt(c));
     int caracter = -1;
     
     if(cadena.charAt(c)>64&&cadena.charAt(c)<91){
@@ -69,11 +70,11 @@ void Buzzer::reproducirString(String cadena){
 }
 
 void Buzzer::punto(){
-  sonidosMorse(200,1);
+  sonidosMorse(1000,100);
 }
 
 void Buzzer::raya(){
-  sonidosMorse(600,150);
+  sonidosMorse(3000,350);
 }
 
 void Buzzer::pausaSonido(){
@@ -85,14 +86,14 @@ void Buzzer::pausaLetra(){
 }
 
 void Buzzer::pausa(int tiempo){
-  int contador = millis();
+  long contador = millis();
   while(contador+tiempo>millis()){
   }
 }
 
 void Buzzer::sonidosMorse(int tiempo,int sonido){
-  int contador = millis();
-  int frecuencia = 0;  
+  long contador = millis();
+  long frecuencia = 0;  
   
   digitalWrite(onOff,HIGH);
   
@@ -105,7 +106,6 @@ void Buzzer::sonidosMorse(int tiempo,int sonido){
       digitalWrite(corriente,LOW);
     }
   }  
-  
   digitalWrite(onOff,LOW);
 }
 
