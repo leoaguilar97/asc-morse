@@ -1,6 +1,7 @@
 #include "buzzer.h"
 #include "Arduino.h"
 
+//pin1 = sonido y pin2 = encender y apagar buzer
 Buzzer::Buzzer(int pin1,int pin2)
 {
   pinMode(pin1, OUTPUT);
@@ -28,10 +29,12 @@ void Buzzer::fail(){
   sonidosMorse(100,1);
 }
 
+//tiempo = tiempo de pausas entre letras
 void Buzzer::settiempoPausaLetra(int tiempo){
     tiempoPausaLetra = tiempo;
 }
 
+//tiempo = tiempo entre pitidos
 void Buzzer::settiempoPausaSonido(int tiempo){
     tiempoPausaSonido = tiempo;
 }
