@@ -25,6 +25,7 @@ let NO_WRD_MESSAGE = "No se envió ninguna palabra.";
 let WRD_ADDED = "Palabra agregada.";
 let NO_WRD_REMAINING = "No existen más palabras en la cola.";
 let DB_ERROR = "No se guardó la palabra, error en la base de datos.";
+let DB_ERROR2 = "No se pudo retornar las palabras dela base de datos.";
 
 //función para comprobar si la petición es desde el dispositivo arduino.
 let isArduino = function(req){
@@ -63,20 +64,17 @@ app.get("/addWord", (req, res) => {
     });
 });
 
-//Obtener la primera palabra agregada que no ha sido obtenida antes
-app.get("/getWord", (req, res) => {
-    //Si no hay mas palabras en la cola
-    if (words.length < 1){
-        return isArduino(req) ? 
-            res.send(NO_WRD_REMAINING) :
-            res.json({ msg: NO_WRD_REMAINING, status: 1, word: null});
-    }
-    //Obtener la primera palabra de la cola, y eliminarla
-    let current_word = words.shift();
-
-    return isArduino(req) ? 
-        res.send(current_word) :
-        res.json({ word: current_word });
+//Agregar una palabra a la cola de palabras
+app.get("/getListWords", (req, res) => {
+    bd.getWords((err, words) => {
+        if (err){
+            //Si ocurrió un error al agregar la palabra a la base de datos
+            return res.status(500).json({msg: DB_ERROR2, status: 0, error: err}); 
+        }
+        
+        //Retornar confirmación de palabra agregada
+        return res.json(words);
+    });
 });
 
 //Obtener la primera palabra agregada que no ha sido obtenida antes
@@ -94,8 +92,6 @@ app.get("/getWord", (req, res) => {
         res.send(current_word) :
         res.json({ word: current_word });
 });
-
-
 
 //Funcion que retorna la página de la aplicación
 app.get("/", (req, res) => {

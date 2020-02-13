@@ -44,3 +44,38 @@ exports.saveWord = function(document, callback){
         });
     });
 }
+
+exports.getWords = function(callback) {
+    //conectar el cliente de MongoDb
+    client.connect(err => {
+        //Si existió algún error en la conexión
+        if (err){
+            console.log(">> Error de conexion a bd: ");
+            console.log(err);
+            return callback(err);
+        }
+
+        let words = [];
+        
+        //Conecta a la vase de datos y se accede a la coleccion
+        client
+        .db("ascmorse")
+        .collection("words")
+        //Se obtienen todos los objetos de la coleccion
+        .find()
+        //Se iteran los objetos y se agreagan a wordo el objeto con los parametros "word" y "typedIn" 
+        .forEach(
+            //callback iteracion
+            doc => {
+                words.push({word: doc.word, typedIn: doc.typedIn || "Indefinido"});
+            },
+            //callback finalizado
+            err => {
+                if (err) { return callback(err); }
+                
+                client.close();
+                callback(null, words);
+            }
+        );
+    });
+}
