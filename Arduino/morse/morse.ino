@@ -1,11 +1,12 @@
-#include "Pushbutton.h"
-#include "morse.h"
-#include "buzzer.h"
+  #include "morse.h"
 
-Pushbutton Pushbutton(2);
+#include <Arduino.h>
+
+Morse morse(0);
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
+  morse.obtainCharacter();
 }

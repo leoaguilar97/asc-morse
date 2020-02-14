@@ -22,15 +22,9 @@ public:
         return 3;
 
       case 2: // El boton no hace nada
-        return 2;  
+        return 0;  
     }
   }
-
-private:
-  int _pin;
-  int state;
-  long time;
-  long contMillis;
   
   int timePress(bool value){// Devuelve true y se almacena en la variable time el tiempo que etuvo presionado el boton
     switch (state){
@@ -41,11 +35,11 @@ private:
         time = 0;
         state = 1;
       }
-      return 0;
+      return 2;
 
     case 1:
       time += millis() - contMillis;
-      if (value){
+      if (!value){
         // El valor es falso o rebota, así que regrese al anterior (inicial)
         state = 0;
       }
@@ -53,7 +47,7 @@ private:
         // Han pasado al menos 15 ms y el valor sigue siendo verdadero, por lo que pasa al siguiente state.
         state = 2;
       }
-      return 0;
+      return 2;
 
     case 2:    
       time += millis() - contMillis;
@@ -74,6 +68,12 @@ private:
   bool isPressed(){// Indica si el boton se encuentra presionado
     return digitalRead(_pin) == 1;
   }
+private:
+  int _pin;
+  int state;
+  long time;
+  long contMillis;
+  
 };
 
 #endif
