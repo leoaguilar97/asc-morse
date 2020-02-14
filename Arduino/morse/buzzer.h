@@ -27,6 +27,10 @@ class Buzzer
       pausa(50);
       sonidosMorse(100,1);
     }
+    
+    void offBuzzer(){ //Apagar buzzer
+      digitalWrite(onOff,LOW);
+    }
 
     void fail(){ //Sonido de falla.
 
@@ -83,6 +87,7 @@ class Buzzer
 
     void reprodusBuzzer(){
       digitalWrite(onOff,HIGH);
+      digitalWrite(corriente,HIGH);
       digitalWrite(corriente,LOW);
     }
 

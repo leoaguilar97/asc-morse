@@ -5,8 +5,8 @@
 #include "Pushbutton.h"
 #include "buzzer.h"
 
-Pushbutton pushbutton(2);
-Pushbutton button(3);
+Pushbutton pushbutton(2);//boton para ingresar morse
+Pushbutton button(3);//boton para regresar palabra
 Buzzer buzzer(13,12);
 
 class Morse{
@@ -19,14 +19,11 @@ class Morse{
     
     String obtainWord(){// Obtiene palabra de morse
         if(button.timePress(button.isPressed())==1){
-          
-            //Serial.println("___-------_"+ret);
             if(cadena == ""){
                 return "$";
             }
             String ret = cadena;
             cadena = "";
-           // Serial.println("___-------_"+ret);
             return ret;  
         }
         
@@ -55,23 +52,23 @@ class Morse{
                 break;
   
             case 3:
-                buzzer.fail();
                 state = 2;
+                buzzer.offBuzzer();
                 break;
             
             case 1:
                 morse[contMorse] = 1;
                 contMorse++;
-                buzzer.ok();
                 timeFinalli = millis();
+                buzzer.offBuzzer();
                 break;
         
             case 2:
-                morse[contMorse] = 2;
-                contMorse++;
-                buzzer.ok();
-                timeFinalli = millis();
-            break;
+              morse[contMorse] = 2;
+              contMorse++;
+              timeFinalli = millis();
+              buzzer.offBuzzer();
+              break;
         }
         return "";
     }
