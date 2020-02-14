@@ -47,7 +47,7 @@ class Buzzer
         tiempoPausaSonido = tiempo;
     }
 
-    void playWord(String cadena){ //Seproduce texto en morse.
+    void playWord(String cadena){ //Reproduce texto en morse.
       for(int c=0;c<cadena.length();c++){
         Serial.print(cadena.charAt(c));
         int caracter = -1;
@@ -67,9 +67,9 @@ class Buzzer
           if(letrasMorse[caracter][i]==0)
             break;
           else if(letrasMorse[caracter][i]==1)
-            punto();
+            point();
           else
-            raya();
+            dash();
           
           pausaSonido();
         }
