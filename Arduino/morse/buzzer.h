@@ -19,6 +19,7 @@ class Buzzer
       instanciaCaracteres();
       tiempoPausaSonido = 400;
       tiempoPausaLetra = 5000;
+      reprodus = 0;
     }
 
     void ok(){  //Sonido de ok.
@@ -80,11 +81,17 @@ class Buzzer
       }
     }
 
+    void reprodusBuzzer(){
+      digitalWrite(onOff,HIGH);
+      digitalWrite(corriente,LOW);
+    }
+
   private:
     int corriente;
     int onOff;
     int tiempoPausaSonido;
     int tiempoPausaLetra;
+    int reprodus;
     
     void pausaSonido(){ //Pausa entre los pitidos.
       pausa(tiempoPausaSonido);
@@ -99,7 +106,7 @@ class Buzzer
       while(contador+tiempo>millis()){
       }
     }
-
+    
     void sonidosMorse(int tiempo,int sonido){ //Crea los sonidos de puntos o rayas.
       long contador = millis();
       long frecuencia = 0;  

@@ -17,47 +17,49 @@ class Morse{
         cadena = "";
     }
     
-    String obtainWord(){
+    String obtainWord(){// Obtiene palabra de morse
         if(button.timePress(button.isPressed())==1){
+          
+            //Serial.println("___-------_"+ret);
             if(cadena == ""){
                 return "$";
             }
-            return cadena;  
+            String ret = cadena;
+            cadena = "";
+           // Serial.println("___-------_"+ret);
+            return ret;  
         }
         
         cadena += obtainCharacter();
-
         return "";
     }
 
-    String obtainCharacter(){
-        if (state){ state = 0; return "?";
-        }else if(contMorse == 5){ contMorse = 0; return (String)obtainMorse();}
+    String obtainCharacter(){// Obtiene caracteres de morse 
+        if (state == 2){ state = 0; return "?";
+        }else if(contMorse==5 || state==1){ state = 0; contMorse = 0; return (String)obtainMorse();}
         
         switch(pushbutton.getState()){
             case 0:
-            Serial.print("0");
                 state = 0;
                 time = 0;
                 contMillis = millis();
                 if(millis()-timeFinalli>5000&&timeFinalli!=0){
                     state = 1;
                     timeFinalli = 0;
+                    buzzer.ok();
                 }
                 break;
   
             case -1:    
-            Serial.print("-1");     
+                buzzer.reprodusBuzzer();  
                 break;
   
             case 3:
-                Serial.print("3");
                 buzzer.fail();
-                state = 1;
+                state = 2;
                 break;
             
             case 1:
-            Serial.print("1");
                 morse[contMorse] = 1;
                 contMorse++;
                 buzzer.ok();
@@ -65,7 +67,6 @@ class Morse{
                 break;
         
             case 2:
-            Serial.print("2");
                 morse[contMorse] = 2;
                 contMorse++;
                 buzzer.ok();

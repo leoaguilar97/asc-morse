@@ -16,8 +16,8 @@ public:
         return -1;
 
       case 1: // Se suelta el boton
-        if (999<time<1499){ return 1; 
-        } else if (2999<time<3499){ return 2; 
+        if (999<timePressButton && timePressButton<1499){ return 1; 
+        } else if (2999<timePressButton && timePressButton<3499){ return 2; 
         } 
         return 3;
 
@@ -32,25 +32,25 @@ public:
       // Si el valor es verdadero, proceda al siguiente state.
       if (value){
         contMillis = millis();
-        time = 0;
+        timePressButton = 0;
         state = 1;
       }
       return 2;
 
     case 1:
-      time += millis() - contMillis;
+      timePressButton = millis() - contMillis;
       if (!value){
         // El valor es falso o rebota, así que regrese al anterior (inicial)
         state = 0;
       }
-      else if (time >= 15){
+      else if (timePressButton >= 15){
         // Han pasado al menos 15 ms y el valor sigue siendo verdadero, por lo que pasa al siguiente state.
         state = 2;
       }
       return 2;
 
     case 2:    
-      time += millis() - contMillis;
+      timePressButton = millis() - contMillis;        
       // Si el valor es verdadero, contina con el siguiente estado.
       if (!value){
         state = 3;
@@ -71,7 +71,7 @@ public:
 private:
   int _pin;
   int state;
-  long time;
+  long timePressButton;
   long contMillis;
   
 };
