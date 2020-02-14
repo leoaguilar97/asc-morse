@@ -27,11 +27,11 @@ class Morse{
             return ret;  
         }
         
-        cadena += obtainCharacter();
+        cadena += obtainCharacter(5000);
         return "";
     }
 
-    String obtainCharacter(){// Obtiene caracteres de morse 
+    String obtainCharacter(int waitTime){// Obtiene caracteres de morse 
         if (state == 2){ state = 0; return "?";
         }else if(contMorse==5 || state==1){ state = 0; contMorse = 0; return (String)obtainMorse();}
         
@@ -40,7 +40,7 @@ class Morse{
                 state = 0;
                 time = 0;
                 contMillis = millis();
-                if(millis()-timeFinalli>5000&&timeFinalli!=0){
+                if(millis()-timeFinalli>waitTime&&timeFinalli!=0){
                     state = 1;
                     timeFinalli = 0;
                     buzzer.ok();
