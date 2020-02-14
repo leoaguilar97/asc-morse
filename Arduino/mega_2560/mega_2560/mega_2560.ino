@@ -1,16 +1,21 @@
-#define DEBUG 1
+#include "buzzer.h"
 
+#define DEBUG 1
 void debug(String val){
   #if DEBUG
   Serial.println(String(">> ") + val); 
   #endif  
 }
 
+Buzzer buzzer;
+
 void setup() {
   Serial.begin(115200);
   Serial1.begin(115200);
 
   Serial.println(">> Inicio controlador mega_2560");
+  
+  buzzer(35, 36);
 }
 
 void process_word(String cword){
@@ -30,6 +35,8 @@ void loop() {
         String c_word = val.substring(i_index, s_index);
         debug(String("Palabra obtenida: " + c_word));
         process_word(c_word);
+
+        buzzer.
       }  
     }
 
