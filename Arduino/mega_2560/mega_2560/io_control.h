@@ -1,14 +1,13 @@
 /*
-   Basado en la siguiente libreria:
-   GitHub | riyas-org/max7219  https://github.com/riyas-org/max7219
-
-   Utilizado en libreria:
-   GitHub | jrullan/neotimer https://github.com/jrullan/neotimer
+   8x8 LED Matrix MAX7219 Scrolling Text
+   Librerias utilizadas:
+      https://github.com/riyas-org/max7219
+   Basado en:
+      https://howtomechatronics.com/tutorials/arduino/8x8-led-matrix-max7219-tutorial-scrolling-text-android-control-via-bluetooth/
 */
 
 #include "MaxMatrix.h"
 #include <avr/pgmspace.h>
-#include <neotimer.h>
 
 PROGMEM const unsigned char CH[] = {
   3, 8, B00000000, B00000000, B00000000, B00000000, B00000000, // space
@@ -94,7 +93,7 @@ PROGMEM const unsigned char CH[] = {
   4, 8, B11111100, B00100100, B00100100, B00011000, B00000000, // p
   4, 8, B00011000, B00100100, B00100100, B11111100, B00000000, // q
   4, 8, B01111100, B00001000, B00000100, B00000100, B00000000, // r
-  4, 8, B01001000, B01010100, B01010100, B00100100, B00000000, // s
+  4, 8, B01001000, B01010100, B01010100, B00100100, B00000000, // text
   3, 8, B00000100, B00111111, B01000100, B00000000, B00000000, // t
   4, 8, B00111100, B01000000, B01000000, B01111100, B00000000, // u
   5, 8, B00011100, B00100000, B01000000, B00100000, B00011100, // v
@@ -108,52 +107,146 @@ PROGMEM const unsigned char CH[] = {
   4, 8, B00001000, B00000100, B00001000, B00000100, B00000000, // ~
 };
 
-int DIN = 12;
-int CS =  11;
-int CLK = 10;
-
-int maxInUse = 1;
-
-MaxMatrix m(DIN, CS, CLK, maxInUse);
-Neotimer printtimer = Neotimer(50);
+int DIN = 10;
+int CS = 9;
+int CLK = 8;
+int MAX = 1;
 
 byte buffer[10];
-String text = "";
-int remaining = 0;
+byte scrollSpeed = 100;
+byte brightness = 15;
+byte indicator = 0;
+byte buffer_size = 0;
+byte isMorse = 0;
 
-void printChar(char c) {
-  if (c < 32) return;
+char text[100] = "HOLA GRUPO #1 ";
+
+MaxMatrix matrix(DIN, CS, CLK, MAX);
+
+//Iniciar la configuracion inicial de la matriz de leds, y del buzzer
+void setup_leds() {
+  matrix.init();
+  matrix.setIntensity(brightness);
+
+  buzzer.settiempoPausaLetra(100);
+}
+
+void clear_text() {
+  for (int i = 0; i < 100; i++) {
+    text[i] = 0;
+    matrix.clear();
+  }
+}
+
+void set_text(String sent_text, bool cleart = true) {
+
+  if (cleart) {
+    clear_text();
+  }
+  
+  //asignar el string al texto
+  for (int i = 0; i < sent_text.length(); i++) {
+    text[i] = sent_text.charAt(i);
+  }
+}
+
+String getStringText(){
+  String result = "";
+  for(int i = 0; i < 100; i++){
+    if (!text[i]){
+      break;
+    }
+    
+    result += String(text[i]);
+  }  
+
+  return result;
+}
+
+//Procesa un ingreso de una cadena, ya sea del serial, del WiFi o del mismo juego
+void process_input(String sent_text) {
+
+  sent_text = getRecievedValue(sent_text, "$WORD_", "_WORD$");
+
+  // Printing the text
+  indicator = sent_text.charAt(0);
+  sent_text = sent_text.substring(1, sent_text.length());
+
+  //Si es cambiar el texto
+  if (indicator == '1') {
+
+    set_text(sent_text);
+    
+    Serial.print(">> Texto: ");
+    Serial.println(text);
+  }
+  // Ajustar velocidad de movimiento del texto
+  else if (indicator == '2') {
+    scrollSpeed = 150 - sent_text.toInt();
+  }
+  // Ajustar la intensidad del brillo
+  else if (indicator == '3') {
+    brightness = sent_text.toInt();
+    matrix.setIntensity(brightness);
+  }
+}
+
+//Imprime un caracter en un ciclo, moviendose a la izquierda
+void printCharWithShift(char c, int shift_speed) {
+  //Si es un caracter válido, caracteres imprimibles
+  if (c < 32) {
+    return;
+  }
+
+  //regresar al valor del indice correcto, basado en 0
   c -= 32;
-  memcpy_P(buffer, CH + 7 * c, 7);
-  m.writeSprite(32, 0, buffer);
-  m.setColumn(32 + buffer[0], 0);
 
+  //Copiar el valor del char pasado y reiniciarlo
+  memcpy_P(buffer, CH + 7 * c, 7);
+  matrix.writeSprite(8, 0, buffer);
+  matrix.setColumn(8 + buffer[0], 0);
+
+  //mover el valor que debe correrse, en el buffer
+  int last_bf_index = buffer[0] + 1;
   for (int i = 0; i < buffer[0] + 1; i++)
   {
-    delay(100);
-    m.shiftLeft(false, false);
+    delay(shift_speed);
+    matrix.shiftLeft(false, false);
+  }
+
+  c += 32;
+
+  buzzer.reproducirString(String(c));
+}
+
+//Imprimir un string, corriendolo a la izquierda
+void printStringWithShift(char* text, int shift_speed) {
+  while (*text != 0) {
+    buffer_size = 0;
+    printCharWithShift(*text, shift_speed);
+    text++;
+
+    if (recieveString(process_input)) {
+      break;
+    }
   }
 }
 
-void printString() {
-  for (int i = 0; i < text.length(); i++) {
-    printChar(text.charAt(i));
+void loop_string(bool convertToMorse = false) {
+  if (convertToMorse && !isMorse) {
+    String m = buzzer.getMorseString(getStringText());
+    
+    debug(String("Morse: ") + m);
+    
+    set_text(m);
+    isMorse = 1;
   }
-}
 
-void setup_leds() {
-  printtimer.start();
+  debug(String("Imprimiendo: ") + text);
+  
+  printStringWithShift(text, scrollSpeed);
 }
-
-char curr = ' ';
 
 void loop() {
-  if (Serial.available()) {
-    curr = Serial.readString().charAt(0);
-#if DEBUG
-    Serial.println(String(">> Recibido: ") + String(curr));
-#endif
-  }
-
-  printChar(curr);
+  loop_string(true);
 }

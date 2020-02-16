@@ -1,8 +1,8 @@
 /*
- * MaxMatrix
- * Version 1.0 Feb 2013
- * Copyright 2013 Oscar Kin-Chung Au
- */
+   MaxMatrix
+   Version 1.0 Feb 2013
+   Copyright 2013 Oscar Kin-Chung Au
+*/
 
 #ifndef _MaxMatrix_H_
 #define _MaxMatrix_H_
@@ -32,12 +32,12 @@ class MaxMatrix
     byte clock;
     byte num;
     byte buffer[80];
-    
+
     void reload();
-  
+
   public:
     MaxMatrix(byte data, byte load, byte clock, byte num);
-    
+
     void init();
     void clear();
     void setCommand(byte command, byte value);
@@ -46,20 +46,20 @@ class MaxMatrix
     void setColumnAll(byte col, byte value);
     void setDot(byte col, byte row, byte value);
     void writeSprite(int x, int y, const byte* sprite);
-    
+
     void shiftLeft(bool rotate = false, bool fill_zero = true);
     void shiftRight(bool rotate = false, bool fill_zero = true);
     void shiftUp(bool rotate = false);
     void shiftDown(bool rotate = false);
 };
 
-MaxMatrix::MaxMatrix(byte _data, byte _load, byte _clock, byte _num) 
+MaxMatrix::MaxMatrix(byte _data, byte _load, byte _clock, byte _num)
 {
   data = _data;
   load = _load;
   clock = _clock;
   num = _num;
-  for (int i=0; i<80; i++)
+  for (int i = 0; i < 80; i++)
     buffer[i] = 0;
 }
 
@@ -68,16 +68,16 @@ void MaxMatrix::init()
   pinMode(data,  OUTPUT);
   pinMode(clock, OUTPUT);
   pinMode(load,  OUTPUT);
-  digitalWrite(clock, HIGH); 
+  digitalWrite(clock, HIGH);
 
-  setCommand(max7219_reg_scanLimit, 0x07);      
+  setCommand(max7219_reg_scanLimit, 0x07);
   setCommand(max7219_reg_decodeMode, 0x00);  // using an led matrix (not digits)
   setCommand(max7219_reg_shutdown, 0x01);    // not in shutdown mode
   setCommand(max7219_reg_displayTest, 0x00); // no display test
-  
+
   // empty registers, turn all LEDs off
   clear();
-  
+
   setIntensity(0x0f);    // the first 0x0f is the value you can set
 }
 
@@ -88,17 +88,17 @@ void MaxMatrix::setIntensity(byte intensity)
 
 void MaxMatrix::clear()
 {
-  for (int i=0; i<8; i++) 
-    setColumnAll(i,0);
-    
-  for (int i=0; i<80; i++)
+  for (int i = 0; i < 8; i++)
+    setColumnAll(i, 0);
+
+  for (int i = 0; i < 80; i++)
     buffer[i] = 0;
 }
 
 void MaxMatrix::setCommand(byte command, byte value)
 {
-  digitalWrite(load, LOW);    
-  for (int i=0; i<num; i++) 
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++)
   {
     shiftOut(data, clock, MSBFIRST, command);
     shiftOut(data, clock, MSBFIRST, value);
@@ -112,8 +112,8 @@ void MaxMatrix::setColumn(byte col, byte value)
 {
   int n = col / 8;
   int c = col % 8;
-  digitalWrite(load, LOW);    
-  for (int i=0; i<num; i++) 
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++)
   {
     if (i == n)
     {
@@ -128,14 +128,14 @@ void MaxMatrix::setColumn(byte col, byte value)
   }
   digitalWrite(load, LOW);
   digitalWrite(load, HIGH);
-  
+
   buffer[col] = value;
 }
 
 void MaxMatrix::setColumnAll(byte col, byte value)
 {
-  digitalWrite(load, LOW);    
-  for (int i=0; i<num; i++) 
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++)
   {
     shiftOut(data, clock, MSBFIRST, col + 1);
     shiftOut(data, clock, MSBFIRST, value);
@@ -147,12 +147,12 @@ void MaxMatrix::setColumnAll(byte col, byte value)
 
 void MaxMatrix::setDot(byte col, byte row, byte value)
 {
-    bitWrite(buffer[col], row, value);
+  bitWrite(buffer[col], row, value);
 
   int n = col / 8;
   int c = col % 8;
-  digitalWrite(load, LOW);    
-  for (int i=0; i<num; i++) 
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++)
   {
     if (i == n)
     {
@@ -173,32 +173,32 @@ void MaxMatrix::writeSprite(int x, int y, const byte* sprite)
 {
   int w = sprite[0];
   int h = sprite[1];
-  
+
   if (h == 8 && y == 0)
-    for (int i=0; i<w; i++)
+    for (int i = 0; i < w; i++)
     {
       int c = x + i;
-      if (c>=0 && c<80)
-        setColumn(c, sprite[i+2]);
+      if (c >= 0 && c < 80)
+        setColumn(c, sprite[i + 2]);
     }
   else
-    for (int i=0; i<w; i++)
-      for (int j=0; j<h; j++)
+    for (int i = 0; i < w; i++)
+      for (int j = 0; j < h; j++)
       {
         int c = x + i;
         int r = y + j;
-        if (c>=0 && c<80 && r>=0 && r<8)
-          setDot(c, r, bitRead(sprite[i+2], j));
+        if (c >= 0 && c < 80 && r >= 0 && r < 8)
+          setDot(c, r, bitRead(sprite[i + 2], j));
       }
 }
 
 void MaxMatrix::reload()
 {
-  for (int i=0; i<8; i++)
+  for (int i = 0; i < 8; i++)
   {
     int col = i;
-    digitalWrite(load, LOW);    
-    for (int j=0; j<num; j++) 
+    digitalWrite(load, LOW);
+    for (int j = 0; j < num; j++)
     {
       shiftOut(data, clock, MSBFIRST, i + 1);
       shiftOut(data, clock, MSBFIRST, buffer[col]);
@@ -213,30 +213,30 @@ void MaxMatrix::shiftLeft(bool rotate, bool fill_zero)
 {
   byte old = buffer[0];
   int i;
-  for (i=0; i<80; i++)
-    buffer[i] = buffer[i+1];
-  if (rotate) buffer[num*8-1] = old;
-  else if (fill_zero) buffer[num*8-1] = 0;
-  
+  for (i = 0; i < 80; i++)
+    buffer[i] = buffer[i + 1];
+  if (rotate) buffer[num * 8 - 1] = old;
+  else if (fill_zero) buffer[num * 8 - 1] = 0;
+
   reload();
 }
 
 void MaxMatrix::shiftRight(bool rotate, bool fill_zero)
 {
-  int last = num*8-1;
+  int last = num * 8 - 1;
   byte old = buffer[last];
   int i;
-  for (i=79; i>0; i--)
-    buffer[i] = buffer[i-1];
+  for (i = 79; i > 0; i--)
+    buffer[i] = buffer[i - 1];
   if (rotate) buffer[0] = old;
   else if (fill_zero) buffer[0] = 0;
-  
+
   reload();
 }
 
 void MaxMatrix::shiftUp(bool rotate)
 {
-  for (int i=0; i<num*8; i++)
+  for (int i = 0; i < num * 8; i++)
   {
     bool b = buffer[i] & 1;
     buffer[i] >>= 1;
@@ -247,7 +247,7 @@ void MaxMatrix::shiftUp(bool rotate)
 
 void MaxMatrix::shiftDown(bool rotate)
 {
-  for (int i=0; i<num*8; i++)
+  for (int i = 0; i < num * 8; i++)
   {
     bool b = buffer[i] & 128;
     buffer[i] <<= 1;

@@ -28,7 +28,7 @@ String getRecievedValue(
   if (findex < 0) {
     return NULL_STRING;
   }
-
+  findex = first_del.length();
   //Obtener la posicion del ultimo delimitador
   int lindex = raw_value.indexOf(last_del);
   if (lindex < 0) {
@@ -56,21 +56,22 @@ String getRecievedValue(
   }
 
   //retornar el valor que esta entre los delimitadores
-  return raw_value.substring(findex, lindex);
+  String result = raw_value.substring(findex, lindex);
+  debug(String("Enviado: ") + result);
+  return result;
 }
 
 //Procesar un valor string enviado, revisar cual comando esta siendo enviado
 //Y realizar una accion dependiendo de el valor obtenido
 void process(String value) {
   //Revisar si es un valor de palabra
-  
 }
 
 //Procesar un ciclo del sistema
 void process_loop() {
   switch (states[sid]) {
-    case START: {} break;
-    case RECIEVING: {} break;
+    case START: {  } break;
+    case RECIEVING: {  } break;
     case WRITING: {} break;
     case PLAYING: {} break;
   }
