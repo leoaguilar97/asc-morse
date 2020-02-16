@@ -1,10 +1,14 @@
 /*
-      8x8 LED Matrix MAX7219 Scrolling Text Example
-   Based on the following library:
+   Basado en la siguiente libreria:
    GitHub | riyas-org/max7219  https://github.com/riyas-org/max7219
+
+   Utilizado en libreria:
+   GitHub | jrullan/neotimer https://github.com/jrullan/neotimer
 */
+
 #include "MaxMatrix.h"
 #include <avr/pgmspace.h>
+#include <neotimer.h>
 
 PROGMEM const unsigned char CH[] = {
   3, 8, B00000000, B00000000, B00000000, B00000000, B00000000, // space
@@ -111,110 +115,45 @@ int CLK = 10;
 int maxInUse = 1;
 
 MaxMatrix m(DIN, CS, CLK, maxInUse);
+Neotimer printtimer = Neotimer(50);
 
 byte buffer[10];
-String text =  "Hola Grupo #10"; // Scrolling text
+String text = "";
+int remaining = 0;
 
-// Display = the extracted characters with scrolling
-void printCharWithShift(char c, int shift_speed) {
-  //Si c es menor que los caracteres admitidos
-  if (c < 32){ return; }
-
-  //Regresar el valor para obtener su indice
+void printChar(char c) {
+  if (c < 32) return;
   c -= 32;
-  
   memcpy_P(buffer, CH + 7 * c, 7);
   m.writeSprite(32, 0, buffer);
   m.setColumn(32 + buffer[0], 0);
-  
+
   for (int i = 0; i < buffer[0] + 1; i++)
   {
-    delay(shift_speed);
+    delay(100);
     m.shiftLeft(false, false);
   }
 }
 
-// Ir por cada caracter, cambiando para atras el valor
-void printStringWithShift(String text, int shift_speed) {
-  for(int i = 0; i < text.length(); i++){
-    printCharWithShift(text.charAt(i), shift_speed);
+void printString() {
+  for (int i = 0; i < text.length(); i++) {
+    printChar(text.charAt(i));
   }
 }
+
+void setup_leds() {
+  printtimer.start();
+}
+
+char curr = ' ';
 
 void loop() {
-  printStringWithShift(text, 100); // (text, scrolling speed)
-}
-
-/**
-   Controla la matriz de leds de 8x8
-   Dise;o de matriz: MAXIM MAX7219CNG +1718
-
-   Utiliza la libreria de LEDS: https://github.com/wayoda/LedControl
-
-   Basado en este tutorial: https://www.instructables.com/id/8x8-Red-Dot-Matrix-With-Arduino/
-*/
-
-/*
-
-#include <LedControl.h>
-
-int DIN = 12;
-int CS =  11;
-int CLK = 10;
-
-byte arrowleft[8] = {0x00, 0x00, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00,};
-byte arrowright[8] = {0x00, 0x00, 0x00, 0x20, 0x20, 0x20, 0x00, 0x00,};
-byte arrowdown[8] = {0x00, 0x00, 0x00, 0x00, 0x20, 0x30, 0x00, 0x00,};
-byte arrowup[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00,};
-byte somthink[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x1C, 0x00, 0x00,};
-byte somthink2[8] = {0x00, 0x00, 0x00, 0x00, 0x04, 0x0C, 0x00, 0x00,};
-
-byte arrowleft2[8] = {0x00, 0x00, 0x00, 0x04, 0x04, 0x04, 0x00, 0x00,};
-byte arrowright2[8] = {0x00, 0x00, 0x04, 0x04, 0x04, 0x00, 0x00, 0x00,};
-byte arrowdown2[8] = {0x00, 0x00, 0x0C, 0x04, 0x00, 0x00, 0x00, 0x00,};
-byte arrowup2[8] = {0x00, 0x00, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00,};
-byte somthink3[8] = {0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x00, 0x00,};
-byte somthink23[8] = {0x00, 0x00, 0x30, 0x20, 0x00, 0x00, 0x00, 0x00,};
-
-LedControl lc = LedControl(DIN, CLK, CS, 1);
-
-int 
-
-void printByte(byte character [])
-{
-  int i = 0;
-  for (i = 0; i < 8; i++)
-  {
-    lc.setRow(0, i, character[i]);
+  if (Serial.available()) {
+    curr = Serial.readString().charAt(0);
+#if DEBUG
+    Serial.println(String(">> Recibido: ") + String(curr));
+#endif
   }
-}
 
-void printEduc8s()
-{
-  printByte(arrowleft);
-  delay(50);
-  printByte(arrowright);
-  delay(50);
-  printByte(arrowdown);
-  delay(50);
-  printByte(arrowup);
-  delay(50);
-  printByte(somthink);
-  delay(50);
-  printByte(somthink2);
-  delay(50);
-  printByte(arrowleft2);
-  delay(50);
-  printByte(arrowright2);
-  delay(50);
-  printByte(arrowdown2);
-  delay(50);
-  printByte(arrowup2);
-  delay(50);
-  printByte(somthink3);
-  delay(50);
-  printByte(somthink23);
-  delay(50);
+  printChar(curr);
 }
-
-*/

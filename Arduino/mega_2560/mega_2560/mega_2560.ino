@@ -13,6 +13,8 @@ void setup() {
   
   m.init(); // module initialize
   m.setIntensity(15); // dot matix intensity 0-15
+
+  setup_leds();
 }
 /*
 void loop() {
