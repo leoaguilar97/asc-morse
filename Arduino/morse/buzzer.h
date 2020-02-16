@@ -64,7 +64,7 @@ class Buzzer
           caracter = cadena.charAt(c)-65;
         }
         else if(cadena.charAt(c)>47&&cadena.charAt(c)<58){    
-          caracter = cadena.charAt(c)-23;
+          caracter = cadena.charAt(c)-22;
         }
         
         if(caracter == -1){
