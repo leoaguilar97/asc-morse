@@ -73,7 +73,7 @@ PROGMEM const unsigned char CH[] = {
   4, 8, B00000001, B00000110, B00011000, B01100000, B00000000, // \ backslash
   2, 8, B01000001, B01111111, B00000000, B00000000, B00000000, // ]
   3, 8, B00000010, B00000001, B00000010, B00000000, B00000000, // hat
-  4, 8, B01000000, B01000000, B01000000, B01000000, B00000000, // _
+  4, 8, B01100000, B01100000, B01100000, B01100000, B00000000, // _
   2, 8, B00000001, B00000010, B00000000, B00000000, B00000000, // `
   4, 8, B00100000, B01010100, B01010100, B01111000, B00000000, // a
   4, 8, B01111111, B01000100, B01000100, B00111000, B00000000, // b
@@ -119,7 +119,7 @@ byte indicator = 0;
 byte buffer_size = 0;
 byte isMorse = 0;
 
-char text[100] = "HOLA GRUPO #1 ";
+char text[100] = "HOLA GRUPO #1";
 
 MaxMatrix matrix(DIN, CS, CLK, MAX);
 
@@ -127,8 +127,6 @@ MaxMatrix matrix(DIN, CS, CLK, MAX);
 void setup_leds() {
   matrix.init();
   matrix.setIntensity(brightness);
-
-  buzzer.settiempoPausaLetra(100);
 }
 
 void clear_text() {
@@ -216,7 +214,7 @@ void printCharWithShift(char c, int shift_speed) {
 
   c += 32;
 
-  buzzer.reproducirString(String(c));
+  buzzer.playDashOrPoint(c);
 }
 
 //Imprimir un string, corriendolo a la izquierda
