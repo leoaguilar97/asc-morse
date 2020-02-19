@@ -1,25 +1,27 @@
 #ifndef buttons_h
 #define buttons_h
 
-#include <Arduino.h>
-
-class Pushbutton {
+//Clase que se utiliza para crear controladores de botones
+//se obtiene si un boton fue presionado en la funcion "pressed"
+class PushButton {
   public:
-    Pushbutton(int pin) {
+    
+    PushButton(int pin) {
       pinMode(pin, INPUT);
-      _pin = pin;
+      buttonPin = pin;
       state = 0;
     }
 
+    //Obtiene el estado del boton
     int getState() {
-      switch (pressed()) {
+      switch (!pressed()) {
         case 0: // El boton esta presionado
           return -1;
 
         case 1: // Se suelta el boton
-          if (15 < timePressButton && timePressButton < 500) {
+          if (15 < timePressButton && timePressButton < 1000) {
             return 1;
-          } else if (501 < timePressButton && timePressButton < 3499) {
+          } else if (1001 < timePressButton && timePressButton < 3499) {
             return 2;
           }
           return 3;
@@ -29,17 +31,37 @@ class Pushbutton {
       }
     }
 
-    bool pressed(){
-      return timePress(isPressed());
+    //Obtiene si el boton esta presionado
+    bool pressed() {
+      /*
+        bool p = false;
+        long milsel = millis();
+        //debug(String("Revisando si el boton esta siendo presionado"));
+
+        //check 10 times for a change
+        while (!p && millis() - milsel <= 100) {
+        p = !timePress(isPressed() == 1);
+        delay(10);
+        }
+
+        //debug( p ? String("Boton presionado") : String("No se presiono"));
+
+        if (p) {
+        delay(1000);
+        }
+      */
+
+      return !timePress(isPressed() == 1);
     }
 
   private:
-    int _pin;
+    int buttonPin;
     int state;
     long timePressButton;
     long contMillis;
 
-    int timePress(bool value) { // Devuelve true y se almacena en la variable time el tiempo que etuvo presionado el boton
+    // Devuelve true y se almacena en la variable time el tiempo que etuvo presionado el boton
+    int timePress(bool value) { 
       switch (state) {
         case 0:
           // Si el valor es verdadero, proceda al siguiente state.
@@ -77,10 +99,15 @@ class Pushbutton {
 
       return 2;
     }
-    
-    bool isPressed() { // Indica si el boton se encuentra presionado
-      return digitalRead(_pin) == 1;
+  
+    // Indica si el boton se encuentra presionado
+    bool isPressed() { 
+      return digitalRead(buttonPin) == 1;
     }
 };
 
+
+PushButton btnChangeState(22);  //boton para cambiar el estado del sistema
+PushButton btnInsMorse(24);     //boton para ingresar morse
+PushButton btnConfirmWord(25);  //boton para regresar palabra
 #endif

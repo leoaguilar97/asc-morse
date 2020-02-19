@@ -4,6 +4,17 @@
       https://github.com/riyas-org/max7219
    Basado en:
       https://howtomechatronics.com/tutorials/arduino/8x8-led-matrix-max7219-tutorial-scrolling-text-android-control-via-bluetooth/
+
+   Comandos de prueba:
+    Estado START:
+    Estado RECIEVING:
+      $WORD_1{TEXTO}_WORD$$_end_$
+      $WORD_1HOLA_WORD$$_end_$
+      $WORD_1LEO12345_WORD$$_end_$
+
+    Estado WRITING:
+    Estado PLAYING:
+
 */
 
 #include "MaxMatrix.h"
@@ -124,59 +135,59 @@ char text[100] = "HOLA GRUPO #1";
 MaxMatrix matrix(DIN, CS, CLK, MAX);
 
 //Iniciar la configuracion inicial de la matriz de leds, y del buzzer
-void setup_leds() {
+void setupIO() {
   matrix.init();
   matrix.setIntensity(brightness);
 }
 
-void clear_text() {
+//limpiar la pantalla y el texto que hay en el buffer
+void clearText() {
   for (int i = 0; i < 100; i++) {
     text[i] = 0;
     matrix.clear();
   }
 }
 
-void set_text(String sent_text, bool cleart = true) {
-
+//cambia el texto actual al texto enviado en el parametro, existe la posibilidad de limpiar la pantalla antes
+void setText(String sent_text, bool cleart = true) {
   if (cleart) {
-    clear_text();
+    clearText();
   }
-  
+
   //asignar el string al texto
   for (int i = 0; i < sent_text.length(); i++) {
     text[i] = sent_text.charAt(i);
   }
 }
 
-String getStringText(){
+//Obtener el buffer de texto en formato String
+String getStringText() {
   String result = "";
-  for(int i = 0; i < 100; i++){
-    if (!text[i]){
+  for (int i = 0; i < 100; i++) {
+    if (!text[i]) {
       break;
     }
-    
+
     result += String(text[i]);
-  }  
+  }
 
   return result;
 }
 
 //Procesa un ingreso de una cadena, ya sea del serial, del WiFi o del mismo juego
-void process_input(String sent_text) {
+void getRecievedString(String sent_text) {
 
+  //Obtener el texto recibido a traves del puerto serial
   sent_text = getRecievedValue(sent_text, "$WORD_", "_WORD$");
-
+  debug(sent_text);
   // Printing the text
   indicator = sent_text.charAt(0);
   sent_text = sent_text.substring(1, sent_text.length());
 
   //Si es cambiar el texto
   if (indicator == '1') {
-
-    set_text(sent_text);
-    
-    Serial.print(">> Texto: ");
-    Serial.println(text);
+    setText(buzzer.getMorseString(sent_text));
+    debug(String("Nuevo Texto: ") + getStringText());
   }
   // Ajustar velocidad de movimiento del texto
   else if (indicator == '2') {
@@ -190,7 +201,7 @@ void process_input(String sent_text) {
 }
 
 //Imprime un caracter en un ciclo, moviendose a la izquierda
-void printCharWithShift(char c, int shift_speed) {
+bool printCharWithShift(char c, int shift_speed, bool isMorse) {
   //Si es un caracter válido, caracteres imprimibles
   if (c < 32) {
     return;
@@ -214,37 +225,37 @@ void printCharWithShift(char c, int shift_speed) {
 
   c += 32;
 
-  buzzer.playDashOrPoint(c);
+  if (isMorse) {
+    buzzer.playDashOrPoint(c);
+  }
+  else {
+    buzzer.playAsciiString(String(c));
+  }
+
+  return loopSystem(getRecievedString);
 }
 
 //Imprimir un string, corriendolo a la izquierda
-void printStringWithShift(char* text, int shift_speed) {
+void printStringWithShift(char* text, int shift_speed, bool isMorse) {
   while (*text != 0) {
     buffer_size = 0;
-    printCharWithShift(*text, shift_speed);
-    text++;
-
-    if (recieveString(process_input)) {
+    if (printCharWithShift(*text, shift_speed, isMorse)) {
       break;
     }
+    text++;
   }
 }
 
-void loop_string(bool convertToMorse = false) {
+//Realiza un ciclo de imprimir en la pantalla el texto que se tiene actualmente
+void displayCycle(bool convertToMorse = false) {
   if (convertToMorse && !isMorse) {
     String m = buzzer.getMorseString(getStringText());
-    
+
     debug(String("Morse: ") + m);
-    
-    set_text(m);
+
+    setText(m);
     isMorse = 1;
   }
 
-  debug(String("Imprimiendo: ") + text);
-  
-  printStringWithShift(text, scrollSpeed);
-}
-
-void loop() {
-  loop_string(true);
+  printStringWithShift(text, scrollSpeed, convertToMorse);
 }

@@ -15,8 +15,9 @@ bool checkAvailable(Stream &_stream, bool (*process)(String val)) {
 
     if (!keepReading) {
       debug(String("Recibido: ") + val);
-      
-      //Procesar el valor obtenido por el modulo, funcion ubicada en processor.h
+
+      //Procesar el valor obtenido por el modulo
+      //Funcion configurable enviada por parametro, debe devolver un boolean y obtener un parametro String
       bool interrupted = process(val);
 
       _stream.println("$continue$");
@@ -35,6 +36,6 @@ bool recieveStringS1(bool (*process_fnc)(String val) = process) {
 }
 
 //recibir del Serial, funcion customizada
-bool recieveString(bool (*process_fnc)(String val) = process){
+bool recieveString(bool (*process_fnc)(String val) = process) {
   return checkAvailable(Serial, process_fnc);
 }
