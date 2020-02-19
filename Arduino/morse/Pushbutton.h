@@ -68,6 +68,7 @@ public:
   bool isPressed(){// Indica si el boton se encuentra presionado
     return digitalRead(_pin) == 1;
   }
+  
 private:
   int _pin;
   int state;
