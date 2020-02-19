@@ -78,9 +78,25 @@ class Pushbutton {
       return 2;
     }
     
+<<<<<<< HEAD
+    return 2;
+  }
+
+  bool isPressed(){// Indica si el boton se encuentra presionado
+    return digitalRead(_pin) == 1;
+  }
+  
+private:
+  int _pin;
+  int state;
+  long timePressButton;
+  long contMillis;
+  
+=======
     bool isPressed() { // Indica si el boton se encuentra presionado
       return digitalRead(_pin) == 1;
     }
+>>>>>>> f64ece3c452d0134c2be06bb68ff288b40c9974a
 };
 
 #endif

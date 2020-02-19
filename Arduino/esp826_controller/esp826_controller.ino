@@ -5,23 +5,22 @@
 
 #define DEBUG 1
 
-#if DEBUG
-void debugstr(String val) {
+void debug(String val){
+  #if DEBUG
+  if(val=="$-1$") return;
   Serial.println(String(">> ") + val);
+  #endif  
 }
-#endif
 
-const char *ssid        = "Casa 3";
-const char *password    = "Aa1234zZ";
-const char *host        = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com";
-const int httpsPort     = 443;
+char *ssid = "Casa 3";
+const char *password = "Aa1234zZ";
 
 String message          = "";
 boolean is_app          = false;
 
 
 void process_app_request(int get, String parameter1, String parameter2) {
-
+  /*
   WiFiClientSecure httpsClient;
   httpsClient.setFingerprint(fingerprint);
   httpsClient.setTimeout(1000);
@@ -37,7 +36,8 @@ void process_app_request(int get, String parameter1, String parameter2) {
   if (r == 30) {
     return;
   }
-
+  */
+  if (WiFi.status() == WL_CONNECTED) {
   String Link = "";
 
   switch (get) {
@@ -58,7 +58,10 @@ void process_app_request(int get, String parameter1, String parameter2) {
       return;
   }
 
-  httpsClient.print(String("GET ") + Link + " HTTP/1.1\r\n" +
+  HTTPClient http;
+  http.begin(host+Link);  //Specify request destination
+  int httpCode = http.GET(); 
+  /*httpsClient.print(String("GET ") + Link + " HTTP/1.1\r\n" +
                     "Host: " + host + "\r\n" +
                     "Connection: close\r\n\r\n");
 
@@ -74,9 +77,23 @@ void process_app_request(int get, String parameter1, String parameter2) {
   while (httpsClient.available()) {
     line += httpsClient.readStringUntil('\n');
   }
+*/
+if (httpCode > 0) { //Check the returning code
+ 
+String payload = http.getString();   //Get the request response payload
+Serial.println(payload);     
 
-  debug(line);
+  debug(payload);//Print the response payload
+ 
 }
+ 
+http.end();   //Close connection
+ 
+}
+ 
+delay(500); 
+}
+
 
 void setup() {
   Serial.begin(115200);
