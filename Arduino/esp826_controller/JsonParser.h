@@ -1,4 +1,3 @@
-
 #include <ArduinoJson.h>
 
 String current_word = "";
