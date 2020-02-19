@@ -6,22 +6,19 @@
 #define DEBUG 1
 
 #if DEBUG
-void debugstr(String val){
+void debugstr(String val) {
   Serial.println(String(">> ") + val);
 }
-#endif  
+#endif
 
-const char *ssid = "Casa 3";
-const char *password = "Aa1234zZ";
+const char *ssid        = "Casa 3";
+const char *password    = "Aa1234zZ";
+const char *host        = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com";
+const int httpsPort     = 443;
 
-const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com";
+String message          = "";
+boolean is_app          = false;
 
-const int httpsPort = 443;
-
-const char fingerprint[] PROGMEM = "BB 43 9A E6 99 A4 01 A9 86 EE 11 D0 6D 69 84 38 1D 03 FC DA";
-
-String message = "";
-boolean is_app = false;
 
 void process_app_request(int get, String parameter1, String parameter2) {
 
@@ -40,34 +37,34 @@ void process_app_request(int get, String parameter1, String parameter2) {
   if (r == 30) {
     return;
   }
-  
+
   String Link = "";
 
-  switch (get){ 
-  case 0: //0 obtiene la palabra.
-    Link = "/getWord";
-    break;
-  case 1: //1 envia la palabra ingresada en caracteres y morse.
-    Link = "/addMorse?word="+parameter1+"&morse"+parameter2;
-    break;
-  case 2: //2 obtener caracteres del juego.
-    Link = "/getGame";
-    break;
-  case 3: //3 retorna el id del jugador y el punteo obtenido.
-    Link = "/setScore?id="+parameter1+"&score="+parameter2;
-    break;
-  default:
-    debug("$-1$");
-    return;
+  switch (get) {
+    case 0: //0 obtiene la palabra.
+      Link = "/getWord";
+      break;
+    case 1: //1 envia la palabra ingresada en caracteres y morse.
+      Link = "/addMorse?word=" + parameter1 + "&morse" + parameter2;
+      break;
+    case 2: //2 obtener caracteres del juego.
+      Link = "/getGame";
+      break;
+    case 3: //3 retorna el id del jugador y el punteo obtenido.
+      Link = "/setScore?id=" + parameter1 + "&score=" + parameter2;
+      break;
+    default:
+      debug("$-1$");
+      return;
   }
 
   httpsClient.print(String("GET ") + Link + " HTTP/1.1\r\n" +
                     "Host: " + host + "\r\n" +
                     "Connection: close\r\n\r\n");
-  
+
   while (httpsClient.connected()) {
     String line = httpsClient.readStringUntil('\n');
-    
+
     if (line == "\r") {
       break;
     }
@@ -81,7 +78,7 @@ void process_app_request(int get, String parameter1, String parameter2) {
   debug(line);
 }
 
-void setup() {  
+void setup() {
   Serial.begin(115200);
 
   WiFi.mode(WIFI_OFF);
@@ -107,6 +104,6 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  process_app_request(0,"","");
+  process_app_request(0, "", "");
   delay(100);
 }
