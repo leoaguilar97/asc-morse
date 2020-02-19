@@ -22,9 +22,9 @@ class Game {
         setText(String(i) + (": "));
 
         //obtener un caracter, se tienen 2 segundos para responder o se toma como erronea
-        char obtained = obtainChar(2000);
+        String obtained = morse.getStringChar(2000);
 
-        if(obtainChar(2000) == text.charAt(i)){
+        if(obtained == text.charAt(i)){
 
           score += 1;
         }
@@ -34,4 +34,5 @@ class Game {
     }
 };
 
+Game game;
 #endif

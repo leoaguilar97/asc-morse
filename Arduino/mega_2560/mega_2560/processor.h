@@ -9,7 +9,7 @@ enum State {
 
 State states[4] = {START, RECIEVING, WRITING, PLAYING};
 //State ID
-int sid = 1;
+int sid = 2;
 
 //Funcion que realizara un ciclo del sistema, utilizado para revisar el puerto
 //ademas de cambios en el estado

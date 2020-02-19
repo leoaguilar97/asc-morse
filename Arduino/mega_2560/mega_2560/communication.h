@@ -14,8 +14,6 @@ bool checkAvailable(Stream &_stream, bool (*process)(String val)) {
     keepReading = val.indexOf("$_end_$") < 0;
 
     if (!keepReading) {
-      debug(String("Recibido: ") + val);
-
       //Procesar el valor obtenido por el modulo
       //Funcion configurable enviada por parametro, debe devolver un boolean y obtener un parametro String
       bool interrupted = process(val);

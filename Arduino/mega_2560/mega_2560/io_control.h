@@ -248,14 +248,20 @@ void printStringWithShift(char* text, int shift_speed, bool isMorse) {
 
 //Realiza un ciclo de imprimir en la pantalla el texto que se tiene actualmente
 void displayCycle(bool convertToMorse = false) {
+  debug("Display cycle");
+  
   if (convertToMorse && !isMorse) {
+    debug("Convertir morse");
     String m = buzzer.getMorseString(getStringText());
-
+    
     debug(String("Morse: ") + m);
 
     setText(m);
     isMorse = 1;
   }
 
+  debug(getStringText());
+  debug("Imprimiendo en consola");
+  
   printStringWithShift(text, scrollSpeed, convertToMorse);
 }

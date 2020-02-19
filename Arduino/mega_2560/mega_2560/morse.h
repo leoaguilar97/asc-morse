@@ -1,22 +1,22 @@
 #ifndef Morse_h
 #define Morse_h
 
-//Clase que recibe una entrada de pulsos por un boton 
+//Clase que recibe una entrada de pulsos por un boton
 //y la decodifica para generar strings a partir del codigo
 //morse ingresado
 class Morse {
   public:
     //constructor del juego
-    Morse(int start) {
-      morseIndex = start;
+    Morse() {
+      morseIndex = 0;
       raw_string = "";
     }
 
     // Agrega caracteres a la raw_string hasta que se presiona el boton de confirmado
-    String getWord() { 
+    String getWord() {
       if (!(btnConfirmWord.pressed())) {
         if (raw_string == "") {
-          return "$";
+          return " ";
         }
         String ret = raw_string;
         raw_string = "";
@@ -27,9 +27,9 @@ class Morse {
 
       return "";
     }
-    
+
     // Obtiene un caracter codificado en morse y lo retorna como un String
-    String getStringChar(int waitTime) { 
+    String getStringChar(int waitTime) {
 
       if (state == 2) {
         state = 0; return "?";
@@ -52,7 +52,7 @@ class Morse {
           break;
 
         case -1:
-          buzzer.reprodusBuzzer();
+          buzzer.replayBuzzerVal();
           break;
 
         case 3:
@@ -82,7 +82,7 @@ class Morse {
     char getMorse() {
       for (int i = 0; i < 36; i++) {
         for (int j = 0; j < 5; j++) {
-          if (buzzer.letrasMorse[i][j] != morse[j]) {
+          if (buzzer.morse_map[i][j] != morse[j]) {
             break;
           }
           if (j == 4) {
@@ -107,5 +107,7 @@ class Morse {
     long timeFinalli;
 
 };
+
+Morse morse;
 
 #endif

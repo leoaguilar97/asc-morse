@@ -6,7 +6,9 @@
 #include "buttons.h"
 #include "processor.h"
 #include "communication.h"
+#include "morse.h"
 #include "io_control.h"
+#include "game.h"
 
 //setup del arduino
 void setup() {
@@ -20,6 +22,7 @@ void setup() {
 
 //procesar el estado del sistema actual
 void processState() {
+  debug(String("Estado actual: ") + currentState());
   switch (currentState()) {
     case START: {
         //Funcion que muestra HOLA GRUPO #1 en la pantalla, se encuentra en io_control.h
@@ -27,16 +30,34 @@ void processState() {
       } break;
 
     case RECIEVING: {
+        debug("Recibiendo.");
         //Funcion que muestra el texto recibido por el modulo esp2866 en la pantalla, se encuentra en io_control.h
         //el parametro true implica que el string recibido se traducira a morse antes de utilizarse
         displayCycle(true);
       } break;
 
     case WRITING: {
+        String wrote = morse.getWord();
+
+        //Si el usuario ya ingreso su palabra, y confirmo
+        if (wrote != "") {
+          debug(String("Palabra ingresada:" ) + getStringText());
+          //TODO: enviar palabra al servidor
+        }
+
         loopSystem(recieveString);
+
+        //displayCycle(true);
       } break;
 
     case PLAYING: {
+        //TODO: recibir valor desde el server
+        String game_text = "JUEGO";
+        int score = game.start(game_text);
+
+        //TODO: enviar score al server
+        debug(String("Resultado obtenido: ") + String(score));
+        
         loopSystem(recieveString);
       } break;
   }
@@ -50,12 +71,14 @@ bool checkStateChanged() {
     debug(String("Cambiando estado del sistema"));
 
     change_state();
+    clearText();
 
     //reiniciar la pantalla y el texto
     if (currentState() == START) {
       setText(String("HOLA GRUPO #1"));
-    } else {
-      clearText();
+    } else if (currentState() == RECIEVING) {
+      setText("");
+      isMorse = false;
     }
 
     return true;

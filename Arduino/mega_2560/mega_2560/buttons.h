@@ -5,7 +5,7 @@
 //se obtiene si un boton fue presionado en la funcion "pressed"
 class PushButton {
   public:
-    
+
     PushButton(int pin) {
       pinMode(pin, INPUT);
       buttonPin = pin;
@@ -33,24 +33,20 @@ class PushButton {
 
     //Obtiene si el boton esta presionado
     bool pressed() {
-      /*
-        bool p = false;
-        long milsel = millis();
-        //debug(String("Revisando si el boton esta siendo presionado"));
 
-        //check 10 times for a change
-        while (!p && millis() - milsel <= 100) {
+      bool p = false;
+      long milsel = millis();
+
+      //check 10 times for a change
+      while (!p && millis() - milsel <= 100) {
         p = !timePress(isPressed() == 1);
         delay(10);
-        }
+      }
 
-        //debug( p ? String("Boton presionado") : String("No se presiono"));
-
-        if (p) {
+      if (p) {
         delay(1000);
-        }
-      */
-
+      }
+    
       return !timePress(isPressed() == 1);
     }
 
@@ -61,7 +57,7 @@ class PushButton {
     long contMillis;
 
     // Devuelve true y se almacena en la variable time el tiempo que etuvo presionado el boton
-    int timePress(bool value) { 
+    int timePress(bool value) {
       switch (state) {
         case 0:
           // Si el valor es verdadero, proceda al siguiente state.
@@ -78,8 +74,8 @@ class PushButton {
             // El valor es falso o rebota, así que regrese al anterior (inicial)
             state = 0;
           }
-          else if (timePressButton >= 15) {
-            // Han pasado al menos 15 ms y el valor sigue siendo verdadero, por lo que pasa al siguiente state.
+          else if (timePressButton >= 50) {
+            // Han pasado al menos 50 ms y el valor sigue siendo verdadero, por lo que pasa al siguiente state.
             state = 2;
           }
           return 2;
@@ -99,9 +95,9 @@ class PushButton {
 
       return 2;
     }
-  
+
     // Indica si el boton se encuentra presionado
-    bool isPressed() { 
+    bool isPressed() {
       return digitalRead(buttonPin) == 1;
     }
 };
