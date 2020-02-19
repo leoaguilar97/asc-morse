@@ -9,7 +9,11 @@ enum State {
 
 State states[4] = {START, RECIEVING, WRITING, PLAYING};
 //State ID
-int sid = 0;
+int sid = 2;
+
+//Funcion que realizara un ciclo del sistema, utilizado para revisar el puerto
+//ademas de cambios en el estado
+bool loopSystem(bool (*process_fnc)(String val));
 
 /*
    Obtiene el valor del String dentro de los delimitadores, funcion que facilita el uso de substring.
@@ -28,7 +32,7 @@ String getRecievedValue(
   if (findex < 0) {
     return NULL_STRING;
   }
-  findex = first_del.length();
+  findex += first_del.length();
   //Obtener la posicion del ultimo delimitador
   int lindex = raw_value.indexOf(last_del);
   if (lindex < 0) {
@@ -57,7 +61,6 @@ String getRecievedValue(
 
   //retornar el valor que esta entre los delimitadores
   String result = raw_value.substring(findex, lindex);
-  debug(String("Enviado: ") + result);
   return result;
 }
 
@@ -65,20 +68,25 @@ String getRecievedValue(
 //Y realizar una accion dependiendo de el valor obtenido
 void process(String value) {
   //Revisar si es un valor de palabra
+  debug("what");
 }
 
-//Procesar un ciclo del sistema
-void process_loop() {
-  switch (states[sid]) {
-    case START: {  } break;
-    case RECIEVING: {  } break;
-    case WRITING: {} break;
-    case PLAYING: {} break;
-  }
-}
-
-//Cambia el valor del estado actual, ya que siempre se lee states[ss_id], al cambiar el indice de 
+//Cambia el valor del estado actual, ya que siempre se lee states[ss_id], al cambiar el indice de
 //manera ciclica
-void change_state(){
+void change_state() {
   sid = (sid + 1) % 4;
+
+  switch (states[sid]) {
+    case START: debug(String("Iniciando estado <START>")); break;
+    case RECIEVING: debug(String("Iniciando estado <RECIEVING>")); break;
+    case WRITING: debug(String("Iniciando estado <WRITING>")); break;
+    case PLAYING: debug(String("Iniciando estado <PLAYING>")); break;
+  }
+
+  delay(3000);
+}
+
+//Devuelve el estado actual del sistema
+State currentState() {
+  return states[sid];
 }

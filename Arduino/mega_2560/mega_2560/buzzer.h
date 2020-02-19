@@ -60,12 +60,12 @@ class Buzzer
       String result = "";
 
       debug(String("Convirtiendo raw_string a morse: ") + raw_string);
-      
+
       for (int c = 0; c < raw_string.length(); c++) {
         int current_char = -1;
 
-        if (raw_string.charAt(c) == ' '){
-          result += " ^ ";  
+        if (raw_string.charAt(c) == ' ') {
+          result += " ^ ";
           continue;
         }
         else if (raw_string.charAt(c) > 64 && raw_string.charAt(c) < 91) {
@@ -75,7 +75,7 @@ class Buzzer
           current_char = raw_string.charAt(c) - 22;
         }
         else {
-          continue;  
+          continue;
         }
 
         for (int i = 0; i < 5; i++) {
@@ -96,28 +96,28 @@ class Buzzer
     }
 
     //Realiza el sonido de un punto o raya, dependiendo del parametro
-    void playDashOrPoint(char morse){
-      if (morse == '.'){
+    void playDashOrPoint(char morse) {
+      if (morse == '.') {
         playPoint();
-      } else if (morse == '_'){
+      } else if (morse == '_') {
         playDash();
       } else {
-          pauseLetter();
-        return;  
+        pauseLetter();
+        return;
       }
       pauseSound();
     }
 
     //Recorre un string codificado en morse para reproducirlo
-    void playMorseString(String morse){
-        for(int i = 0; i < morse.length(); i++){
-            playDashOrPoint(morse.charAt(i));
-        }
+    void playMorseString(String morse) {
+      for (int i = 0; i < morse.length(); i++) {
+        playDashOrPoint(morse.charAt(i));
+      }
     }
 
     //Se reproduce texto en morse.
-    void playAsciiString(String raw_string) { 
-        playMorseString(getMorseString(raw_string));
+    void playAsciiString(String raw_string) {
+      playMorseString(getMorseString(raw_string));
     }
 
     void replayBuzzerVal() {
@@ -144,7 +144,7 @@ class Buzzer
     void pausa(int tiempo) { //Crea las pausas (metodo llamado por pauseSound y pauseLetter).
       long contador = millis();
       while (contador + tiempo > millis()) {
-          ;
+        ;
       }
     }
 
