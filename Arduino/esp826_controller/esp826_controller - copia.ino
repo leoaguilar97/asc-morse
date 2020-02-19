@@ -5,11 +5,12 @@
 
 #define DEBUG 1
 
-#if DEBUG
-void debugstr(String val){
+void debug(String val){
+  #if DEBUG
+  if(val=="$-1$") return;
   Serial.println(String(">> ") + val);
+  #endif  
 }
-#endif  
 
 const char *ssid = "Casa 3";
 const char *password = "Aa1234zZ";
@@ -107,6 +108,6 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  process_app_request(0,"","");
+  process_app_request();
   delay(100);
 }
