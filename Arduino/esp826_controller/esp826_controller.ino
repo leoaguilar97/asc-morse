@@ -19,7 +19,7 @@ const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-o
 String message = "";
 boolean is_app = false;
 //current player id
-int cpid = 0;
+String cpid = 0;
 
 //setup del modulo esp_826
 void setup() {
@@ -67,7 +67,7 @@ void waitSerial() {
 #endif
   }
 #if DEBUG
-  Serial.println(">> Respuesta obtenida");
+  Serial.println("\n>> Respuesta obtenida");
 #endif
 }
 
@@ -113,19 +113,17 @@ void sendWord() {
   waitSerial();
   String wordToSend = Serial.readString();
   wordToSend.trim();
-
-  app_request(String("addWord?word=") + String(wordToSend));
+  Serial.print("Enviando palabra: " + wordToSend);
+  Serial.println(app_request(String("addWord?word=") + String(wordToSend)));
   Serial.println("ok");
 }
 
 //Obtiene el juego del server
 void getGame() {
-  waitSerial();
-
   String resp = app_request(String("getGame"));
+  String resp2 = resp;
+  
   resp.trim();
-
-  Serial.println(String("Respuesta: ") + resp);
 
   if (resp == "") {
     //no hay ningun juego actual
@@ -134,12 +132,11 @@ void getGame() {
   else {
     //indice del "|" para separar el id del jugador de la palabra
     int slash_index = resp.indexOf("|");
-    resp.substring(0, slash_index);
-
+    
     //obtener el id del jugador
-    cpid = resp.toInt();
+    cpid = resp.substring(0, slash_index);;
 
-    Serial.println(String("Jugador: ") + String(cpid));
+    Serial.println(String("Jugador: ") + cpid);
     String gameWord = resp.substring(slash_index + 1, resp.length());
 
     Serial.println(
@@ -152,7 +149,8 @@ void getGame() {
 void sendScore() {
   waitSerial();
   String score = Serial.readString();
-
+  
+  
   app_request(
     String("setScore?id=")
     + String(cpid)
