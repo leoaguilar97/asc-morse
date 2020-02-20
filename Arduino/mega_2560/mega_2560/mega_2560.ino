@@ -6,8 +6,8 @@
 #include "buttons.h"
 #include "processor.h"
 #include "communication.h"
-#include "morse.h"
 #include "io_control.h"
+#include "morse.h"
 #include "game.h"
 
 //setup del arduino
@@ -43,7 +43,11 @@ void processState() {
         if (wrote != "") {
           debug(String("Palabra ingresada:" ) + wrote);
           //TODO: enviar palabra al servidor
-          setText(wrote);
+          setText(wrote.indexOf("?") >= 0 ? String("ERROR") : wrote);
+          long dtp = millis();
+          while(millis() - dtp <= 10000){
+            displayCycle();  
+          }
         }
 
         loopSystem(recieveString);
@@ -104,5 +108,5 @@ bool loopSystem(
 
 void loop() {
   processState();
-  delay(100);
+  //delay(100);
 }

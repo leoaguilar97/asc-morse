@@ -25,17 +25,19 @@ class Morse {
       }
 
       raw_string += getStringChar(2000);
-      debug(raw_string);
       
       return "";
     }
 
     // Obtiene un caracter codificado en morse y lo retorna como un String
     String getStringChar(int waitTime) {
-      if (state == 2) {
+      if (state == 2|| morseIndex == 5) {
         state = 0; 
+        morseIndex = 0;
+        timeFinalli = 0;
+        buzzer.fail();
         return "?";
-      } else if (morseIndex == 5 || state == 1) {
+      } else if (state == 1) {
         state = 0;
         morseIndex = 0;
         return (String)getMorse();
@@ -98,7 +100,9 @@ class Morse {
           }
         }
       }
-      return '?';
+
+      buzzer.fail();
+      return '-';
     }
 
   private:

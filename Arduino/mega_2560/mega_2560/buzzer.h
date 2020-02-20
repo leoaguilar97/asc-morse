@@ -24,9 +24,9 @@ class Buzzer
     }
 
     void ok() { //Sonido de ok.
-      playMorseCharSound(100, 1);
+      playMorseCharSound(50, 0);
       pausa(50);
-      playMorseCharSound(100, 1);
+      playMorseCharSound(50, 0);
     }
 
     void offBuzzer() { //Apagar buzzer
@@ -34,9 +34,7 @@ class Buzzer
     }
 
     void fail() { //Sonido de falla.
-      playMorseCharSound(700, 1);
-      pausa(50);
-      playMorseCharSound(100, 1);
+      playMorseCharSound(1000, 0);
     }
 
     void playPoint() { //Sonido de playPoint.
