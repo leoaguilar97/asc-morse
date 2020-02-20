@@ -11,6 +11,7 @@
       $WORD_1{TEXTO}_WORD$$_end_$
       $WORD_1HOLA_WORD$$_end_$
       $WORD_1LEO12345_WORD$$_end_$
+      $WORD_1AEIOU_WORD$$_end_$
 
     Estado WRITING:
     Estado PLAYING:
