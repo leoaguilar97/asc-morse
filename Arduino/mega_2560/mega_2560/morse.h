@@ -10,6 +10,7 @@ class Morse {
     Morse() {
       morseIndex = 0;
       raw_string = "";
+      state = 0;
     }
 
     // Agrega caracteres a la raw_string hasta que se presiona el boton de confirmado
@@ -23,7 +24,6 @@ class Morse {
         return ret;
       }
 
-      state = 0;
       raw_string += getStringChar(2000);
       debug(raw_string);
       
@@ -32,9 +32,9 @@ class Morse {
 
     // Obtiene un caracter codificado en morse y lo retorna como un String
     String getStringChar(int waitTime) {
-
       if (state == 2) {
-        state = 0; return "?";
+        state = 0; 
+        return "?";
       } else if (morseIndex == 5 || state == 1) {
         state = 0;
         morseIndex = 0;
@@ -50,6 +50,7 @@ class Morse {
             state = 1;
             timeFinalli = 0;
             buzzer.ok();
+            return "";
           }
           break;
 
@@ -93,10 +94,11 @@ class Morse {
             morse[2] = 0;
             morse[3] = 0;
             morse[4] = 0;
-            return i < 25 ? (char)i + 65 : (char)i + 23;
+            return i < 25 ? (char)i + 65 : (char)i + 22;
           }
         }
       }
+      return '?';
     }
 
   private:

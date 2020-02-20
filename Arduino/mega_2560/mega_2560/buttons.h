@@ -14,10 +14,10 @@ class PushButton {
 
     //Obtiene el estado del boton
     int getState() {
-      switch (!pressed()) {
+      switch (buttonState()) {
         case 0: // El boton esta presionado
           return -1;
-
+          
         case 1: // Se suelta el boton
           if (15 < timePressButton && timePressButton < 1000) {
             return 1;
@@ -53,6 +53,11 @@ class PushButton {
       return timePress(isPressed() == 1);
     }
 
+    // Metodo que devuelve el estado del boton
+    int buttonState() {
+      return timePress(isPressed());
+    }
+    
   private:
     int buttonPin;
     int state;
