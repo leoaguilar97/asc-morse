@@ -114,7 +114,7 @@ void sendWord() {
   String wordToSend = Serial.readString();
   wordToSend.trim();
   Serial.print("Enviando palabra: " + wordToSend);
-  Serial.println(app_request(String("addWord?word=") + String(wordToSend)));
+  Serial.println(app_request(String("addMorse?word=") + String(wordToSend)));
   Serial.println("ok");
 }
 
@@ -150,6 +150,7 @@ void getGame() {
 void sendScore() {
   waitSerial();
   String score = Serial.readString();
+  score.trim();
   
   app_request(
     String("setScore?id=")

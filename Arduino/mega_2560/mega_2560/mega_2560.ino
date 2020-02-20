@@ -41,8 +41,9 @@ void processState() {
 
         //Si el usuario ya ingreso su palabra, y confirmo
         if (wrote != "") {
-          debug(String("Palabra ingresada:" ) + getStringText());
+          debug(String("Palabra ingresada:" ) + wrote);
           //TODO: enviar palabra al servidor
+          setText(wrote);
         }
 
         loopSystem(recieveString);

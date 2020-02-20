@@ -14,7 +14,7 @@ class Morse {
 
     // Agrega caracteres a la raw_string hasta que se presiona el boton de confirmado
     String getWord() {
-      if (!(btnConfirmWord.pressed())) {
+      if (btnConfirmWord.pressed()) {
         if (raw_string == "") {
           return " ";
         }
@@ -23,8 +23,10 @@ class Morse {
         return ret;
       }
 
-      raw_string += getStringChar(5000);
-
+      state = 0;
+      raw_string += getStringChar(2000);
+      debug(raw_string);
+      
       return "";
     }
 
