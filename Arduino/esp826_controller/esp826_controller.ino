@@ -5,96 +5,23 @@
 
 #define DEBUG 1
 
-void debug(String val){
-  #if DEBUG
-  if(val=="$-1$") return;
+void debug(String val) {
+#if DEBUG
+  if (val == "$-1$") return;
   Serial.println(String(">> ") + val);
-  #endif  
+#endif
 }
 
-char *ssid = "Casa 3";
+const char *ssid = "Casa 3";
 const char *password = "Aa1234zZ";
+const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/";
 
-String message          = "";
-boolean is_app          = false;
+String message = "";
+boolean is_app = false;
+//current player id
+int cpid = 0;
 
-
-void process_app_request(int get, String parameter1, String parameter2) {
-  /*
-  WiFiClientSecure httpsClient;
-  httpsClient.setFingerprint(fingerprint);
-  httpsClient.setTimeout(1000);
-
-  int r = 0;
-
-  while ((!httpsClient.connect(host, httpsPort)) && (r < 30)) {
-    delay(10);
-    r++;
-  }
-
-  debug("Salio ciclo");
-  if (r == 30) {
-    return;
-  }
-  */
-  if (WiFi.status() == WL_CONNECTED) {
-  String Link = "";
-
-  switch (get) {
-    case 0: //0 obtiene la palabra.
-      Link = "/getWord";
-      break;
-    case 1: //1 envia la palabra ingresada en caracteres y morse.
-      Link = "/addMorse?word=" + parameter1 + "&morse" + parameter2;
-      break;
-    case 2: //2 obtener caracteres del juego.
-      Link = "/getGame";
-      break;
-    case 3: //3 retorna el id del jugador y el punteo obtenido.
-      Link = "/setScore?id=" + parameter1 + "&score=" + parameter2;
-      break;
-    default:
-      debug("$-1$");
-      return;
-  }
-
-  HTTPClient http;
-  http.begin(host+Link);  //Specify request destination
-  int httpCode = http.GET(); 
-  /*httpsClient.print(String("GET ") + Link + " HTTP/1.1\r\n" +
-                    "Host: " + host + "\r\n" +
-                    "Connection: close\r\n\r\n");
-
-  while (httpsClient.connected()) {
-    String line = httpsClient.readStringUntil('\n');
-
-    if (line == "\r") {
-      break;
-    }
-  }
-
-  String line = "";
-  while (httpsClient.available()) {
-    line += httpsClient.readStringUntil('\n');
-  }
-*/
-if (httpCode > 0) { //Check the returning code
- 
-String payload = http.getString();   //Get the request response payload
-Serial.println(payload);     
-
-  debug(payload);//Print the response payload
- 
-}
- 
-http.end();   //Close connection
- 
-}
- 
-delay(500); 
-}
-
-
+//setup del modulo esp_826
 void setup() {
   Serial.begin(115200);
 
@@ -105,7 +32,7 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.println("");
 
-  Serial.print("Connecting");
+  Serial.print("Conectando a internet");
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -113,14 +40,152 @@ void setup() {
   }
 
   Serial.println("");
-  Serial.print("Connected to ");
+  Serial.print("Conectado a: ");
   Serial.println(ssid);
-  Serial.print("IP address: ");
+  Serial.print("IP local: ");
   Serial.println(WiFi.localIP());
+  Serial.println("-----------");
 }
 
-// the loop function runs over and over again forever
+//Esperar a que el serial este disponible
+void waitSerial() {
+#if DEBUG
+  Serial.println(">> Esperando respuesta");
+  int dt = 0;
+#endif
+
+  while (!(Serial.available() > 0)) {
+#if DEBUG
+    if (dt == 10) {
+      dt = 0;
+      Serial.println(".");
+    } else {
+      Serial.print(".");
+    }
+    delay(100);
+    dt++;
+#endif
+  }
+#if DEBUG
+  Serial.println(">> Respuesta obtenida");
+#endif
+}
+
+//realizar una peticion HTTP y retornar el valor que agrego en string
+String app_request(String link) {
+  //si el modulo esta conectado a internet
+  if (WiFi.status() == WL_CONNECTED) {
+    debug("Conectado a internet");
+    HTTPClient http;
+    //realizar la peticion http
+    http.begin(host + link);
+    
+    debug("Realizando get");
+    int httpCode = http.GET();
+    String result = "";
+    //Check the returning code
+    if (httpCode > 0) {
+      result += http.getString();
+    }
+
+    //close connection
+    http.end();
+
+    return result;
+  }
+
+  return "";
+}
+
+//Obtiene la palabra actual del servidor
+void getWord() {
+  //enviar resultado al arduino
+  Serial.println(
+    String("$WORD_")
+    + app_request("getWord")
+    + String("_WORD$$_end_$")
+  );
+}
+
+//Envia una palabra al servidor
+void sendWord() {
+  //leer la palabra enviada
+  waitSerial();
+  String wordToSend = Serial.readString();
+  wordToSend.trim();
+
+  app_request(String("addWord?word=") + String(wordToSend));
+  Serial.println("ok");
+}
+
+//Obtiene el juego del server
+void getGame() {
+  waitSerial();
+
+  String resp = app_request(String("getGame"));
+  resp.trim();
+
+  Serial.println(String("Respuesta: ") + resp);
+
+  if (resp == "") {
+    //no hay ningun juego actual
+    Serial.println("...");
+  }
+  else {
+    //indice del "|" para separar el id del jugador de la palabra
+    int slash_index = resp.indexOf("|");
+    resp.substring(0, slash_index);
+
+    //obtener el id del jugador
+    cpid = resp.toInt();
+
+    Serial.println(String("Jugador: ") + String(cpid));
+    String gameWord = resp.substring(slash_index + 1, resp.length());
+
+    Serial.println(
+      String("$WORD_") + gameWord + String("_WORD$$_end_$")
+    );
+  }
+}
+
+//Envia el resultado obtenido por el jugador al server
+void sendScore() {
+  waitSerial();
+  String score = Serial.readString();
+
+  app_request(
+    String("setScore?id=")
+    + String(cpid)
+    + String("&score=")
+    + score
+  );
+
+  Serial.println("ok");
+}
+
+// The loop function runs over and over again forever
 void loop() {
-  process_app_request(0, "", "");
-  delay(100);
+  if (Serial.available() > 0) {
+    //Obtener valor ingresado del serial
+    String value = Serial.readString();
+
+    if (value.indexOf("getWord") >= 0) {
+      getWord();
+    }
+    else if (value.indexOf("sendWord") >= 0) {
+      sendWord();
+    }
+    else if (value.indexOf("getGame") >= 0) {
+      getGame();
+    }
+    else if (value.indexOf("sendScore") >= 0) {
+      sendScore();
+    }
+    //esperar a que se envie un continue
+    while (value.indexOf("$continue$") < 0) {
+      waitSerial();
+      value = Serial.readString();
+    }
+    Serial.println(">> Finalizado");
+  }
 }

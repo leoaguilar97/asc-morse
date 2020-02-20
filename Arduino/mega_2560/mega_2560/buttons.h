@@ -32,22 +32,25 @@ class PushButton {
     }
 
     //Obtiene si el boton esta presionado
-    bool pressed() {
-
-      bool p = false;
-      long milsel = millis();
-
-      //check 10 times for a change
-      while (!p && millis() - milsel <= 100) {
-        p = !timePress(isPressed() == 1);
-        delay(10);
+    bool pressed(bool doDelay = true) {
+      if(doDelay){
+        bool p = false;
+        long milsel = millis();
+  
+        //check 10 times for a change
+        while (!p && millis() - milsel <= 100) {
+          p = !timePress(isPressed() == 1);
+          delay(10);
+        }
+  
+        if (p) {
+          delay(1000);
+        }
+      
+        return !timePress(isPressed() == 1);
       }
 
-      if (p) {
-        delay(1000);
-      }
-    
-      return !timePress(isPressed() == 1);
+      return timePress(isPressed() == 1);
     }
 
   private:
