@@ -19,7 +19,7 @@ const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-o
 String message = "";
 boolean is_app = false;
 //current player id
-String cpid = 0;
+String cpid = "";
 
 //setup del modulo esp_826
 void setup() {
@@ -79,8 +79,8 @@ String app_request(String link) {
     HTTPClient http;
     //realizar la peticion http
     http.begin(host + link);
-    
-    debug("Realizando get");
+
+    debug("Realizando get: " + link);
     int httpCode = http.GET();
     String result = "";
     //Check the returning code
@@ -122,7 +122,7 @@ void sendWord() {
 void getGame() {
   String resp = app_request(String("getGame"));
   String resp2 = resp;
-  
+
   resp.trim();
 
   if (resp == "") {
@@ -132,15 +132,16 @@ void getGame() {
   else {
     //indice del "|" para separar el id del jugador de la palabra
     int slash_index = resp.indexOf("|");
-    
+
     //obtener el id del jugador
     cpid = resp.substring(0, slash_index);;
 
     Serial.println(String("Jugador: ") + cpid);
-    String gameWord = resp.substring(slash_index + 1, resp.length());
 
     Serial.println(
-      String("$WORD_") + gameWord + String("_WORD$$_end_$")
+      String("$WORD_")
+      + resp.substring(slash_index + 1, resp.length())
+      + String("_WORD$$_end_$")
     );
   }
 }
@@ -150,10 +151,9 @@ void sendScore() {
   waitSerial();
   String score = Serial.readString();
   
-  
   app_request(
     String("setScore?id=")
-    + String(cpid)
+    + cpid
     + String("&score=")
     + score
   );
