@@ -12,8 +12,8 @@ void debug(String val) {
 #endif
 }
 
-const char *ssid = "Casa 3";
-const char *password = "Aa1234zZ";
+const char *ssid = "Arnoldo";
+const char *password = "12345678";
 const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/";
 
 String message = "";
