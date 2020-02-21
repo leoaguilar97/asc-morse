@@ -125,7 +125,7 @@ int CLK = 8;
 int MAX = 1;
 
 byte buffer[10];
-byte scrollSpeed = 100;
+byte scrollSpeed = 25;
 byte brightness = 15;
 byte indicator = 0;
 byte buffer_size = 0;
@@ -236,6 +236,35 @@ bool printCharWithShift(char c, int shift_speed, bool isMorse) {
   return loopSystem(getRecievedString);
 }
 
+//Imprime un string estaticamente, sin tocar text
+void printStatic(char c){
+  matrix.clear();
+
+  c -= 32;
+
+  //Copiar el valor del char pasado y reiniciarlo
+  memcpy_P(buffer, CH + 7 * c, 7);
+  matrix.writeSprite(8, 0, buffer);
+  matrix.setColumn(8 + buffer[0], 0);
+
+  //mover el valor que debe correrse, en el buffer
+  int last_bf_index = buffer[0] + 1;
+  for (int i = 0; i < buffer[0] + 1; i++)
+  {
+    delay(1);
+    matrix.shiftLeft(false, false);
+  }
+}
+
+void blinkValue(char c){
+  for (int i = 0; i < 5; i++){
+    printStatic(c);
+    delay(200);
+    printStatic(' ');
+    delay(100);
+  } 
+}
+
 //Imprimir un string, corriendolo a la izquierda
 void printStringWithShift(char* text, int shift_speed, bool isMorse) {
   while (*text != 0) {
@@ -249,21 +278,7 @@ void printStringWithShift(char* text, int shift_speed, bool isMorse) {
 
 //Realiza un ciclo de imprimir en la pantalla el texto que se tiene actualmente
 void displayCycle(bool convertToMorse = false) {
-  debug("Display cycle");
-
-  if (convertToMorse && !isMorse) {
-    debug("Convertir morse");
-    String m = buzzer.getMorseString(getStringText());
-
-    debug(String("Morse: ") + m);
-
-    setText(m);
-    isMorse = 1;
-  }
-
-  debug(getStringText());
-  debug("Imprimiendo en consola");
-
+  debug("Imprimiendo: <" + String(text) + ">");
   printStringWithShift(text, scrollSpeed, convertToMorse);
 }
 
@@ -275,13 +290,9 @@ void printToSerial(String value, Stream &_stream = Serial1) {
   debug("Envio finalizado");
 }
 
-//imprime continuar para que el dispositivo conectado al serial sepa cuando seguir
-void printContinue() {
-  printToSerial("$continue$");
-}
-
 bool waitSerial(long mscs, Stream &_stream = Serial1){
   debug("Esperando puerto serial");
+  
   long now = millis();
   
   while (!(_stream.available() > 0) && (millis() - now <= mscs)) {
@@ -296,24 +307,27 @@ bool waitSerial(long mscs, Stream &_stream = Serial1){
 
 //Recibir palabra del servidor
 String getMorseWord(Stream &_stream = Serial1) {
+  
   printToSerial("getWord");
 
   if (!waitSerial(10000)){
     debug("No se realizo ninguna conexion");
-    printContinue();
     return "";  
   }
 
   String morseWord = _stream.readString();
-  debug("Valor enviado por el server: " + morseWord);
   
-  morseWord = getRecievedValue(morseWord, "$WORD_", "_WORD$");
   morseWord.trim();
-  morseWord = buzzer.getMorseString(morseWord);
-  
-  printContinue();
+  morseWord = getRecievedValue(morseWord, "$_", "_$");
 
-  return morseWord;
+  debug("Valor enviado por el server: <" + morseWord + "> largo: " + String(morseWord.length()));
+  
+  if (morseWord.length() == 0){
+    setText("#");
+    return "";
+  }
+  
+  return buzzer.getMorseString(morseWord);
 }
 
 //Enviar una palabra a traves del serial
@@ -331,8 +345,6 @@ void sendMorseWord(String morseWord, Stream &_stream = Serial1) {
   delay(1000);
   
   debug("Palabra enviada a modulo");
-  
-  printContinue();
 }
 
 //Recibir un juego del servidor
@@ -341,24 +353,22 @@ String getGame(Stream &_stream = Serial1) {
   printToSerial("getGame");
 
   if (!waitSerial(1000)){
-    printContinue();
     return "";  
   }
 
   String game = _stream.readString();
   game = getRecievedValue(game, "$WORD_", "_WORD$");
-
-  printContinue();
-
+  game.trim();
+  
   return game;
 }
 
 //Enviar el punteo obtenido en el juego al servidor
 void sendGameScore(int score, Stream &_stream = Serial1) {
   printToSerial("sendScore");
-
-  _stream.println(score);
+  
+  delay(1000);
+  
+  _stream.println(String(score));
   _stream.flush();
-
-  printToSerial("$continue$");
 }

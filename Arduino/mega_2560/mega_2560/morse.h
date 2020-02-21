@@ -25,6 +25,10 @@ class Morse {
       }
 
       raw_string += getStringChar(2000);
+
+      if (raw_string.length() > 0){
+        printStatic(raw_string.charAt(raw_string.length() - 1));
+      }
       
       return "";
     }

@@ -18,13 +18,11 @@ void setup() {
   Serial.println(">> Inicio controlador mega_2560");
 
   setupIO();
-
-  clearText();
 }
 
 //procesar el estado del sistema actual
 void processState() {
-  
+
   switch (currentState()) {
     case START: {
         //Funcion que muestra HOLA GRUPO #1 en la pantalla, se encuentra en io_control.h
@@ -34,8 +32,10 @@ void processState() {
     case RECIEVING: {
         debug("Obteniendo palabra de la BD");
         String mw = getMorseWord();
-      
-        if (mw != "") {
+
+        debug("Palabra obtenida: <" + mw + ">");
+
+        if (mw.length() >= 1) {
           setText(mw);
         }
 
@@ -47,10 +47,6 @@ void processState() {
 
     case WRITING: {
 
-        sendMorseWord("TEST");
-        delay(5000);
-        break;
-        
         String wrote = morse.getWord();
 
         //Si el usuario ya ingreso su palabra, y confirmo
@@ -73,12 +69,15 @@ void processState() {
       } break;
 
     case PLAYING: {
-        //TODO: recibir valor desde el server
-        String game_text = "JUEGO";
-        int score = game.start(game_text);
+        String game_text = getGame();
+        debug("Jugando con la palabra: <" + game_text + ">");
+        if (game_text.length() != 0) {
+          int score = game.start(game_text);
 
-        //TODO: enviar score al server
-        debug(String("Resultado obtenido: ") + String(score));
+          debug(String("Resultado obtenido: ") + String(score));
+
+          sendGameScore(score);
+        }
 
         loopSystem(recieveString);
       } break;
@@ -94,6 +93,29 @@ bool checkStateChanged() {
 
     change_state();
     clearText();
+
+    switch (states[sid]) {
+      case START: {
+          blinkValue('I');
+          debug(String("Iniciando estado <START>"));
+          break;
+        }
+      case RECIEVING: {
+          blinkValue('R');
+          debug(String("Iniciando estado <RECIEVING>"));
+          break;
+        }
+      case WRITING: {
+          blinkValue('E');
+          debug(String("Iniciando estado <WRITING>"));
+          break;
+        }
+      case PLAYING: {
+          blinkValue('J');
+          debug(String("Iniciando estado <PLAYING>"));
+          break;
+        }
+    }
 
     //reiniciar la pantalla y el texto
     if (currentState() == START) {
@@ -122,6 +144,8 @@ bool loopSystem(
     //revisar si algo fue enviado por el puerto serial (esp2866)
     recieveString(process_fnc);
 }
+
+int c = 65;
 
 void loop() {
   processState();
