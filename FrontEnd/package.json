@@ -1,0 +1,22 @@
+{
+  "name": "practica1arqui2",
+  "version": "1.0.0",
+  "description": "Aplicación Web para uso de la primera practica",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harias/morse.git"
+  },
+  "author": "Haroldo Arias",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harias/morse/issues"
+  },
+  "homepage": "https://github.com/harias/morse#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

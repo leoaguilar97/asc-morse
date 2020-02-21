@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title Page-->
+    <title>ASCMorse - Envia mensajes codificados</title>
+
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+
+    <!-- Main CSS-->
+    <link href="css/main.css" rel="stylesheet" media="all">
+    
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+    <script>
+        $( document ).ready(function() {
+
+            $.get("http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/getGames", function(data, status){
+                if(status == "success"){
+                    $("#divContenido").html(data);
+                }
+            });
+
+
+        });
+     
+        function sendgame(){
+            var texto = $("#text").val();
+            texto = texto.toUpperCase();
+            
+            var player = $("#player").val();
+            player = player.toUpperCase();
+
+            $.get("http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/newGame?word="+texto+"&player="+player, function(data, status){
+                if(status == "success"){
+                   alert("Se envió la información correctamente");
+                   $("#text").val("");
+                   $("#player").val("");
+                }else{
+                    alert("Error de Conexión");
+                }
+            });
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <div class="page-wrapper bg-dark p-t-100 p-b-50">
+        <div class="wrapper wrapper--w900">
+            <div class="card card-6">
+                <div class="card-heading">
+                    <h2 class="title">Inicia un Juego</h2>
+                </div>
+                <div class="card-body">
+                    
+                        <div class="form-row">
+                            <div class="name">Jugador</div>
+							
+							<div class="value">
+                                <input class="input--style-6" type="text" name="player" id="player">
+                            </div>
+							
+                            
+                        </div>
+						
+						<div class="form-row">
+                            <div class="name">Texto</div>
+							
+							<div class="value">
+                                <input class="input--style-6" type="text" name="text" id="text" maxlength="10">
+                            </div>
+							
+                            
+                        </div>
+					
+                    
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn--radius-2 btn--blue-2" onclick="sendgame();">Enviar</button>
+                </div>
+
+
+                <br/> <br/> <br/>
+                <div class="card card-6">
+                    <div class="card-heading">
+                        <h2 class="title">Historial de Juegos</h2>
+                    </div>
+                    <div class="card-body" id="divContenido">
+    
+                    </div>  
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Main JS-->
+    <script src="js/global.js"></script>
+</body>
+</html>
