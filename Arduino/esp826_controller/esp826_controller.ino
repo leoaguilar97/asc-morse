@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 void debug(String val) {
 #if DEBUG
@@ -14,6 +14,7 @@ void debug(String val) {
 
 const char *ssid = "Arnoldo";
 const char *password = "12345678";
+
 const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/";
 
 String message = "";
@@ -181,11 +182,5 @@ void loop() {
     else if (value.indexOf("sendScore") >= 0) {
       sendScore();
     }
-    //esperar a que se envie un continue
-    while (value.indexOf("$continue$") < 0) {
-      waitSerial();
-      value = Serial.readString();
-    }
-    //Serial.println(">> Finalizado");
   }
 }
