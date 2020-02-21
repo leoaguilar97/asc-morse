@@ -12,8 +12,9 @@ void debug(String val) {
 #endif
 }
 
-const char *ssid = "Casa 3";
-const char *password = "Aa1234zZ";
+const char *ssid = "Arnoldo";
+const char *password = "12345678";
+
 const char *host = "http://arqui2-api-p2-ayd2.apps.us-west-1.starter.openshift-online.com/";
 
 String message = "";
@@ -100,9 +101,9 @@ String app_request(String link) {
 void getWord() {
   //enviar resultado al arduino
   Serial.println(
-    String("$WORD_")
+    String("$_")
     + app_request("getWord")
-    + String("_WORD$$_end_$")
+    + String("_$")
   );
 }
 
@@ -128,7 +129,7 @@ void getGame() {
 
   if (resp == "") {
     //no hay ningun juego actual
-    Serial.println("$WORD__WORD$$_end_$");
+    Serial.println("$WORD__WORD$");
   }
   else {
     //indice del "|" para separar el id del jugador de la palabra
@@ -181,11 +182,5 @@ void loop() {
     else if (value.indexOf("sendScore") >= 0) {
       sendScore();
     }
-    //esperar a que se envie un continue
-    while (value.indexOf("$continue$") < 0) {
-      waitSerial();
-      value = Serial.readString();
-    }
-    //Serial.println(">> Finalizado");
   }
 }
