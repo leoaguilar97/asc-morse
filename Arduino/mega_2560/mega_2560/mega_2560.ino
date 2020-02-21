@@ -18,11 +18,13 @@ void setup() {
   Serial.println(">> Inicio controlador mega_2560");
 
   setupIO();
+
+  clearText();
 }
 
 //procesar el estado del sistema actual
 void processState() {
-  debug(String("Estado actual: ") + currentState());
+  
   switch (currentState()) {
     case START: {
         //Funcion que muestra HOLA GRUPO #1 en la pantalla, se encuentra en io_control.h
@@ -30,23 +32,38 @@ void processState() {
       } break;
 
     case RECIEVING: {
-        debug("Recibiendo.");
+        debug("Obteniendo palabra de la BD");
+        String mw = getMorseWord();
+      
+        if (mw != "") {
+          setText(mw);
+        }
+
         //Funcion que muestra el texto recibido por el modulo esp2866 en la pantalla, se encuentra en io_control.h
         //el parametro true implica que el string recibido se traducira a morse antes de utilizarse
         displayCycle(true);
+
       } break;
 
     case WRITING: {
+
+        sendMorseWord("TEST");
+        delay(5000);
+        break;
+        
         String wrote = morse.getWord();
 
         //Si el usuario ya ingreso su palabra, y confirmo
         if (wrote != "") {
           debug(String("Palabra ingresada:" ) + wrote);
-          //TODO: enviar palabra al servidor
+
           setText(wrote.indexOf("?") >= 0 ? String("ERROR") : wrote);
+
+          sendMorseWord(wrote);
+
           long dtp = millis();
-          while(millis() - dtp <= 10000){
-            displayCycle();  
+          while (millis() - dtp <= 10000) {
+            displayCycle();
           }
         }
 
@@ -62,7 +79,7 @@ void processState() {
 
         //TODO: enviar score al server
         debug(String("Resultado obtenido: ") + String(score));
-        
+
         loopSystem(recieveString);
       } break;
   }

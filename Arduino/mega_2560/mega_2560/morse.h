@@ -31,14 +31,15 @@ class Morse {
 
     // Obtiene un caracter codificado en morse y lo retorna como un String
     String getStringChar(int waitTime) {
-      if (state == 2|| morseIndex == 5) {
+      if (state == 2 || morseIndex > 5) {
         state = 0; 
         morseIndex = 0;
         timeFinalli = 0;
         buzzer.fail();
         return "?";
-      } else if (state == 1) {
+      } else if (state == 1 ) {
         state = 0;
+        timeFinalli = 0;
         morseIndex = 0;
         return (String)getMorse();
       }
@@ -102,7 +103,7 @@ class Morse {
       }
 
       buzzer.fail();
-      return '-';
+      return '?';
     }
 
   private:

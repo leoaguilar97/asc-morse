@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 void debug(String val) {
 #if DEBUG
@@ -30,21 +30,20 @@ void setup() {
   WiFi.mode(WIFI_STA);
 
   WiFi.begin(ssid, password);
-  Serial.println("");
+  
+  //Serial.println("");
 
-  Serial.print("Conectando a internet");
+  //Serial.print("Conectando a internet");
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    //Serial.print(".");
   }
-
-  Serial.println("");
-  Serial.print("Conectado a: ");
-  Serial.println(ssid);
-  Serial.print("IP local: ");
-  Serial.println(WiFi.localIP());
-  Serial.println("-----------");
+  
+  debug("Conectado a: ");
+  debug(ssid);
+  debug("-----------");
+  //*/
 }
 
 //Esperar a que el serial este disponible
@@ -113,9 +112,11 @@ void sendWord() {
   waitSerial();
   String wordToSend = Serial.readString();
   wordToSend.trim();
-  Serial.print("Enviando palabra: " + wordToSend);
+  /*Serial.print("Enviando palabra: " + wordToSend);
   Serial.println(app_request(String("addMorse?word=") + String(wordToSend)));
   Serial.println("ok");
+  */
+  app_request(String("addMorse?word=") + String(wordToSend));
 }
 
 //Obtiene el juego del server
@@ -127,7 +128,7 @@ void getGame() {
 
   if (resp == "") {
     //no hay ningun juego actual
-    Serial.println("...");
+    Serial.println("$WORD__WORD$$_end_$");
   }
   else {
     //indice del "|" para separar el id del jugador de la palabra
@@ -136,7 +137,7 @@ void getGame() {
     //obtener el id del jugador
     cpid = resp.substring(0, slash_index);;
 
-    Serial.println(String("Jugador: ") + cpid);
+    //Serial.println(String("Jugador: ") + cpid);
 
     Serial.println(
       String("$WORD_")
@@ -159,7 +160,7 @@ void sendScore() {
     + score
   );
 
-  Serial.println("ok");
+  //Serial.println("ok");
 }
 
 // The loop function runs over and over again forever
@@ -185,6 +186,6 @@ void loop() {
       waitSerial();
       value = Serial.readString();
     }
-    Serial.println(">> Finalizado");
+    //Serial.println(">> Finalizado");
   }
 }

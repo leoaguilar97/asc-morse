@@ -250,11 +250,11 @@ void printStringWithShift(char* text, int shift_speed, bool isMorse) {
 //Realiza un ciclo de imprimir en la pantalla el texto que se tiene actualmente
 void displayCycle(bool convertToMorse = false) {
   debug("Display cycle");
-  
+
   if (convertToMorse && !isMorse) {
     debug("Convertir morse");
     String m = buzzer.getMorseString(getStringText());
-    
+
     debug(String("Morse: ") + m);
 
     setText(m);
@@ -263,6 +263,102 @@ void displayCycle(bool convertToMorse = false) {
 
   debug(getStringText());
   debug("Imprimiendo en consola");
-  
+
   printStringWithShift(text, scrollSpeed, convertToMorse);
+}
+
+//imprime en el serial y espera a ser leido
+void printToSerial(String value, Stream &_stream = Serial1) {
+  debug(String("Enviando a puerto serial: " + value));
+  _stream.println(value);
+  _stream.flush();
+  debug("Envio finalizado");
+}
+
+//imprime continuar para que el dispositivo conectado al serial sepa cuando seguir
+void printContinue() {
+  printToSerial("$continue$");
+}
+
+bool waitSerial(long mscs, Stream &_stream = Serial1){
+  debug("Esperando puerto serial");
+  long now = millis();
+  
+  while (!(_stream.available() > 0) && (millis() - now <= mscs)) {
+    Serial.print(".");
+    delay(500);
+  }
+  
+  Serial.println("");
+  
+  return millis() - now <= mscs; 
+}
+
+//Recibir palabra del servidor
+String getMorseWord(Stream &_stream = Serial1) {
+  printToSerial("getWord");
+
+  if (!waitSerial(10000)){
+    debug("No se realizo ninguna conexion");
+    printContinue();
+    return "";  
+  }
+
+  String morseWord = _stream.readString();
+  debug("Valor enviado por el server: " + morseWord);
+  
+  morseWord = getRecievedValue(morseWord, "$WORD_", "_WORD$");
+  morseWord.trim();
+  morseWord = buzzer.getMorseString(morseWord);
+  
+  printContinue();
+
+  return morseWord;
+}
+
+//Enviar una palabra a traves del serial
+void sendMorseWord(String morseWord, Stream &_stream = Serial1) {
+  debug("Enviando palabra al server");
+  printToSerial("sendWord");
+
+  delay(1000);
+  
+  debug(morseWord);
+  
+  _stream.println(morseWord);
+  _stream.flush();
+
+  delay(1000);
+  
+  debug("Palabra enviada a modulo");
+  
+  printContinue();
+}
+
+//Recibir un juego del servidor
+String getGame(Stream &_stream = Serial1) {
+
+  printToSerial("getGame");
+
+  if (!waitSerial(1000)){
+    printContinue();
+    return "";  
+  }
+
+  String game = _stream.readString();
+  game = getRecievedValue(game, "$WORD_", "_WORD$");
+
+  printContinue();
+
+  return game;
+}
+
+//Enviar el punteo obtenido en el juego al servidor
+void sendGameScore(int score, Stream &_stream = Serial1) {
+  printToSerial("sendScore");
+
+  _stream.println(score);
+  _stream.flush();
+
+  printToSerial("$continue$");
 }
