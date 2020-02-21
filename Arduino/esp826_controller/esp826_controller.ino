@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 void debug(String val) {
 #if DEBUG
@@ -101,9 +101,9 @@ String app_request(String link) {
 void getWord() {
   //enviar resultado al arduino
   Serial.println(
-    String("$WORD_")
+    String("$_")
     + app_request("getWord")
-    + String("_WORD$$_end_$")
+    + String("_$")
   );
 }
 
@@ -129,7 +129,7 @@ void getGame() {
 
   if (resp == "") {
     //no hay ningun juego actual
-    Serial.println("$WORD__WORD$$_end_$");
+    Serial.println("$WORD__WORD$");
   }
   else {
     //indice del "|" para separar el id del jugador de la palabra
